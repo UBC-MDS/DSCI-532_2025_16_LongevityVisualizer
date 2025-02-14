@@ -1,12 +1,6 @@
-# california_wildfire_visualizer
+# longevity_visualizer
 
-A dashboard visualizes insights about wildfire in California counties through years!
-
-## Installation
-
-```bash
-$ pip install california_wildfire_visualizer
-```
+A dashboard visualizes insights about life expectancy around the world!
 
 ## Usage
 
@@ -18,8 +12,8 @@ Interested in contributing? Check out the contributing guidelines. Please note t
 
 ## License
 
-`california_wildfire_visualizer` was created by Long Nguyen. It is licensed under the terms of the MIT license.
+`longevity_visualizer` was created by Long Nguyen, Zhiwei Zhang, Abdul Safdar, and Chukwunonso Ebele-Muolokwu. It is licensed under the terms of the MIT license.
 
 ## Credits
 
-`california_wildfire_visualizer` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).
+`longevity_visualizer` was created with [`cookiecutter`](https://cookiecutter.readthedocs.io/en/latest/) and the `py-pkgs-cookiecutter` [template](https://github.com/py-pkgs/py-pkgs-cookiecutter).
