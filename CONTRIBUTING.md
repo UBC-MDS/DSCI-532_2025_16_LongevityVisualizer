@@ -40,32 +40,21 @@ If you are proposing a feature:
 
 ## Get Started!
 
-Ready to contribute? Here's how to set up `california_wildfire_visualizer` for local development.
+Ready to contribute? Here's how to set up `longevity_visualizer` for local development.
 
-1. Download a copy of `california_wildfire_visualizer` locally.
+1. Download a copy of `longevity_visualizer` locally.
 
-2. Create and activate a conda environment for `california_wildfire_visualizer`:
+2. Install the project dependencies using the environment.yaml file
 
-    ```console
-    $ conda create -n california_wildfire_visualizer python=3.12
-    $ conda activate california_wildfire_visualizer
-    ```
-
-3. Install `california_wildfire_visualizer` using `poetry`:
-
-    ```console
-    $ poetry install
-    ```
-
-4. Use `git` (or similar) to create a branch for local development and make your changes:
+3. Use `git` (or similar) to create a branch for local development and make your changes:
 
     ```console
     $ git checkout -b name-of-your-bugfix-or-feature
     ```
 
-5. When you're done making changes, check that your changes conform to any code formatting requirements and pass any tests.
+4. When you're done making changes, check that your changes conform to any code formatting requirements and pass any tests.
 
-6. Commit your changes and open a pull request.
+5. Commit your changes and open a pull request.
 
 ## Pull Request Guidelines
 
@@ -77,5 +66,5 @@ Before you submit a pull request, check that it meets these guidelines:
 
 ## Code of Conduct
 
-Please note that the `california_wildfire_visualizer` project is released with a
+Please note that the `longevity_visualizer` project is released with a
 Code of Conduct. By contributing to this project you agree to abide by its terms.
