@@ -18,13 +18,16 @@ card_holder = dbc.Card([
                     html.H1('placeholder'),
                     html.Br()
                 ])
-            ])
+            ], className="mb-4")
 first_graphic_card = dbc.Card([
-                dbc.CardBody([
-                    dcc.Graph(id='indicator-graphic')
+                        dbc.CardBody([
+                            dcc.Graph(id='indicator-graphic')
                 ])
-            ])
-widgets = dbc.Card([
+            ], className="mb-4")
+widgets = [
+            html.H1('Longevity Visualizer'),
+            html.Br(),
+            dbc.Card([
                 dbc.CardBody([
                     html.Label('Select Continent:'),
                     dcc.Dropdown(
@@ -47,16 +50,12 @@ widgets = dbc.Card([
                     ),
                 ])
             ], className="mb-4")
+        ]
 # Layout
 app.layout = dbc.Container([
     dbc.Row([
         # First Column: Global widgets
-        dbc.Col([
-            html.H1('Longevity Visualizer'),
-            html.Br(),
-            widgets
-        ], md=4),  # 4/12 grid width for inputs
-
+        dbc.Col(widgets, style={"backgroundColor": "#fdd835", "padding": "15px", "height": "100vh"}, md=4),  # 4/12 grid width for inputs
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
@@ -70,7 +69,7 @@ app.layout = dbc.Container([
                 dbc.Col([
                     card_holder
                 ]),
-            ]),
+            ], className="mt-4"),
             # Second row for 2 charts
             dbc.Row([
                 dbc.Col([
@@ -90,7 +89,7 @@ app.layout = dbc.Container([
                 ]),
             ])
         ], md=8)  # 8/12 grid width for graph
-    ], className="mt-4")
+    ])
 ], fluid=True)
 
 # Callbacks
