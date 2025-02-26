@@ -98,12 +98,16 @@ widgets = [
         ]
 
 # Cards
-card_holder = dbc.Card([
-                    dbc.CardBody([
-                    html.H1('placeholder'),
-                    html.Br()
-                ])
-            ], className="mb-4")
+card_avg_life = dbc.Card(id='average_life')
+card_avg_service = dbc.Card(id='average_service')
+card_avg_gdp = dbc.Card(id='average_gdp')
+card_holder = dbc.Row([
+    dbc.Col(card_avg_life, md=4),
+    dbc.Col(card_avg_gdp, md=4),
+    dbc.Col(card_avg_service, md=4)
+], style={"paddingTop": "50px"})
+
+# Charts
 map_chart = dbc.Card([
                 dbc.CardBody([
                     dcc.Graph(id="map-graph")
@@ -132,17 +136,7 @@ app.layout = dbc.Container([
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
-            dbc.Row([
-                dbc.Col([
-                    card_holder
-                ]),
-                dbc.Col([
-                    card_holder
-                ]),
-                dbc.Col([
-                    card_holder
-                ]),
-            ], className="mt-4"),
+            dbc.Row(card_holder, className="mb-4"),
             # Second row for 2 charts
             dbc.Row([
                 dbc.Col([
@@ -183,6 +177,51 @@ def set_countries_options(selected_continent):
     Input('country-dropdown', 'options'))
 def set_countries_value(available_options):
     return available_options[1]['value']
+
+# Cards
+@app.callback(
+    [Output("average_life", "children"),
+     Output("average_gdp", "children"),
+    Output("average_service", "children")],
+    [Input("continent-dropdown", "value"),
+     Input("year-slider-top", "value")]
+)
+def update_average_values(selected_continent, selected_year):
+    # Filter dataset based on selected continent(s)
+    filtered_df = df[df["year"] == selected_year]
+    if "(All)" not in selected_continent:
+        filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
+
+    # Handle case where no data is available
+    if filtered_df.empty:
+        return "No Data Available", "No Data Available", "No Data Available"
+
+    # Compute Averages
+    avg_life = filtered_df["life_exp"].mean()
+    avg_gdp = filtered_df["gdp"].mean()
+    avg_service = filtered_df["services"].mean()
+
+    # cards to return
+    _avg_life = [dbc.CardHeader('🌍 Average Longevity', style={'backgroundColor': 'rgb(25, 135, 140)',
+                                                                     'color': 'white',
+                                                                     'textAlign': 'center',
+                                                                     'fontSize': '20px'}),
+                dbc.CardBody(f'{avg_life:.2f} years', style={'textAlign': 'center',
+                                                                    'fontSize': '35px'})]
+    _avg_gdp = [dbc.CardHeader('💰 Average GDP per Capita', style={'backgroundColor': 'rgb(25, 135, 140)',
+                                                                     'color': 'white',
+                                                                     'textAlign': 'center',
+                                                                     'fontSize': '20px'}),
+                dbc.CardBody(f'${avg_gdp:,.2f}', style={'textAlign': 'center',
+                                                                    'fontSize': '35px'})]
+    _avg_service = [dbc.CardHeader('⛑️ Average Service Workers Percentage', style={'backgroundColor': 'rgb(25, 135, 140)',
+                                                                     'color': 'white',
+                                                                     'textAlign': 'center',
+                                                                     'fontSize': '20px'}),
+                    dbc.CardBody(f'{avg_service:.2f}%', style={'textAlign': 'center',
+                                                                    'fontSize': '35px'})]
+    # Format the output
+    return _avg_life, _avg_gdp, _avg_service
 
 # Map Chart
 @app.callback(
