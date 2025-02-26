@@ -10,11 +10,14 @@ import plotly.express as px
 df = pd.read_csv('data/raw/gapminder_data_graphs.csv')
 df = df.dropna(subset=["country", "continent", "year", "life_exp", "hdi_index", 
                        "co2_consump", "gdp", "services"])
+unique_years = sorted(df["year"].unique())
 
 # Initialize the app with Bootstrap styling
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # Global widgets
+top_half = None
+bottom_half = None
 widgets = [
             html.H1('Longevity Visualizer'),
             html.Br(),
@@ -23,6 +26,7 @@ widgets = [
                     html.Label('Select Continent:'),
                     dcc.Dropdown(
                         id='continent-dropdown',
+                        multi=True,
                         options=[{"label": "All", "value": "All"}] + 
                                 [{'label': i, 'value': i} for i in df['continent'].unique()],
                         value='All',
@@ -33,13 +37,14 @@ widgets = [
                     dcc.Dropdown(id='country-dropdown'),
                     html.Br(),
                     html.Label('Select Year Range:'),
-                    dcc.RangeSlider(
-                        id='year-slider',
-                        min=df['year'].min(),
-                        max=df['year'].max(),
-                        value=[df['year'].min(), df['year'].max()],
-                        marks={str(year): str(year) for year in range(df['year'].min(), df['year'].max()+1, 5)},
-                        step=None
+                    dcc.Slider(
+                        id="year-slider-top",
+                        min=min(unique_years),
+                        max=max(unique_years),
+                        value=unique_years[0],
+                        marks={str(y): str(y) for y in unique_years},
+                        step=None,
+                        updatemode='drag'
                     ),
                 ])
             ], className="mb-4")
@@ -127,60 +132,47 @@ def set_countries_value(available_options):
 # Map Chart
 @app.callback(
     Output("map-graph", "figure"),
-    [Input("continent-dropdown", "value"), Input("year-slider", "value")]
+    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")]
 )
-def update_map(selected_continent, year_range):
-    start_year, end_year = year_range  # Extract range values
-    dff = df[(df["year"] >= start_year) & (df["year"] <= end_year)]
+def update_map(selected_continent, selected_year):
+    if "All" in selected_continent:
+        dff = df[df["year"] == selected_year]
+    else:
+        dff = df[(df["year"] == selected_year) & (df["continent"].isin(selected_continent))]
 
-    # Calculate the average life expectancy per country
-    dff_avg = dff.groupby("country", as_index=False).agg({"life_exp": "mean"})
+    if dff.empty:
+        return go.Figure()
 
-    # Merge with original data to retain country locations
-    dff_avg = dff_avg.merge(df[['country', 'continent']], on='country', how='left').drop_duplicates()
-
-    # If a specific continent is selected, filter again
-    if selected_continent != "All":
-        dff_avg = dff_avg[dff_avg["continent"] == selected_continent]
-
-    # Create choropleth map
     fig_map = px.choropleth(
-        dff_avg, locations="country", locationmode="country names", color="life_exp",
+        dff, locations="country", locationmode="country names", color="life_exp",
         hover_name="country", color_continuous_scale=px.colors.sequential.Viridis,
-        title=f"Avg Life Expectancy ({selected_continent}, {start_year}-{end_year})", 
-        projection="natural earth"
+        title=f"Life Expectancy ({selected_continent}, {selected_year})", projection="natural earth"
     )
-
     fig_map.update_layout(margin={"r": 0, "t": 50, "l": 0, "b": 0})
+    
     return fig_map
 
 # Bubble chart
 @app.callback(
     Output("bubble-graph", "figure"),
-    [Input("continent-dropdown", "value"), Input("year-slider", "value")]
+    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")]
 )
-def update_bubble(selected_continent, year_range):
-    start_year, end_year = year_range
-    dff = df[(df["year"] >= start_year) & (df["year"] <= end_year)]
+def update_bubble(selected_continent, selected_year):
+    if "All" in selected_continent:
+        dff = df[df["year"] == selected_year]
+    else:
+        dff = df[(df["year"] == selected_year) & (df["continent"].isin(selected_continent))]
 
-    # Calculate the average values per country
-    dff_avg = dff.groupby(["country", "continent"], as_index=False).agg({
-        "gdp": "mean",
-        "co2_consump": "mean",
-        "life_exp": "mean"
-    })
-
-    # If a specific continent is selected, filter again
-    if selected_continent != "All":
-        dff_avg = dff_avg[dff_avg["continent"] == selected_continent]
-
-    # Create bubble chart (GDP vs Life Expectancy, bubble size = CO2 consumption)
+    if dff.empty:
+        return go.Figure()
+    
+    dff_bubble = dff.dropna(subset=["gdp", "co2_consump", "life_exp"])
     fig_bubble = px.scatter(
-        dff_avg, x="gdp", y="life_exp", size="co2_consump", color="continent",
-        hover_name="country", title=f"Avg Life Expectancy vs. GDP ({start_year}-{end_year})"
+        dff_bubble, x="gdp", y="life_exp", size="co2_consump", color="continent",
+        hover_name="country", title="Life Expectancy vs. GDP (Bubble Size = CO2)"
     )
-
     fig_bubble.update_layout(margin={"r": 20, "t": 50, "l": 40, "b": 40})
+    
     return fig_bubble
 
 @app.callback(
