@@ -1,5 +1,6 @@
 import dash
 from dash import html, dcc
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import pandas as pd
@@ -9,35 +10,90 @@ df = pd.read_csv('data/raw/gapminder_data_graphs.csv')
 df = df.dropna(subset=["country", "continent", "year", "life_exp", "hdi_index", 
                        "co2_consump", "gdp", "services"])
 
-app = dash.Dash(__name__)
+# Initialize the app with Bootstrap styling
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
-# Layout of the application
-app.layout = html.Div([
-    html.Div([
-        html.Label('Select Continent:'),
-        dcc.Dropdown(
-            id='continent-dropdown',
-            options=[{'label': i, 'value': i} for i in df['continent'].unique()],
-            value='Asia'
-        ),
-        html.Label('Select Country:'),
-        dcc.Dropdown(
-            id='country-dropdown'
-        ),
-        html.Label('Select Year Range:'),
-        dcc.RangeSlider(
-            id='year-slider',
-            min=df['year'].min(),
-            max=df['year'].max(),
-            value=[df['year'].min(), df['year'].max()],
-            marks={str(year): str(year) for year in range(df['year'].min(), df['year'].max()+1, 5)},
-            step=None
-        ),
-    ], style={'padding': 20}),
-    dcc.Graph(id='indicator-graphic')
-])
+card_holder = dbc.Card([
+                    dbc.CardBody([
+                    html.H1('placeholder'),
+                    html.Br()
+                ])
+            ])
+first_graphic_card = dbc.Card([
+                dbc.CardBody([
+                    dcc.Graph(id='indicator-graphic')
+                ])
+            ])
+widgets = dbc.Card([
+                dbc.CardBody([
+                    html.Label('Select Continent:'),
+                    dcc.Dropdown(
+                        id='continent-dropdown',
+                        options=[{'label': i, 'value': i} for i in df['continent'].unique()],
+                        value='Asia'
+                    ),
+                    html.Br(),
+                    html.Label('Select Country:'),
+                    dcc.Dropdown(id='country-dropdown'),
+                    html.Br(),
+                    html.Label('Select Year Range:'),
+                    dcc.RangeSlider(
+                        id='year-slider',
+                        min=df['year'].min(),
+                        max=df['year'].max(),
+                        value=[df['year'].min(), df['year'].max()],
+                        marks={str(year): str(year) for year in range(df['year'].min(), df['year'].max()+1, 5)},
+                        step=None
+                    ),
+                ])
+            ], className="mb-4")
+# Layout
+app.layout = dbc.Container([
+    dbc.Row([
+        # First Column: Global widgets
+        dbc.Col([
+            html.H1('Longevity Visualizer'),
+            html.Br(),
+            widgets
+        ], md=4),  # 4/12 grid width for inputs
 
-# Callback for updating the country dropdown based on selected continent
+        # Second Column: Charts
+        dbc.Col([
+            # First row for 3 cards
+            dbc.Row([
+                dbc.Col([
+                    card_holder
+                ]),
+                dbc.Col([
+                    card_holder
+                ]),
+                dbc.Col([
+                    card_holder
+                ]),
+            ]),
+            # Second row for 2 charts
+            dbc.Row([
+                dbc.Col([
+                    first_graphic_card
+                ]),
+                dbc.Col([
+                    card_holder
+                ]),
+            ]),
+            # Third row for 2 charts
+            dbc.Row([
+                dbc.Col([
+                    card_holder
+                ]),
+                dbc.Col([
+                    card_holder
+                ]),
+            ])
+        ], md=8)  # 8/12 grid width for graph
+    ], className="mt-4")
+], fluid=True)
+
+# Callbacks
 @app.callback(
     Output('country-dropdown', 'options'),
     Input('continent-dropdown', 'value'))
@@ -51,7 +107,6 @@ def set_countries_options(selected_continent):
 def set_countries_value(available_options):
     return available_options[0]['value']
 
-# Callback for updating the graph
 @app.callback(
     Output('indicator-graphic', 'figure'),
     [Input('continent-dropdown', 'value'),
