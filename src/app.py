@@ -104,11 +104,6 @@ card_holder = dbc.Card([
                     html.Br()
                 ])
             ], className="mb-4")
-first_graphic_card = dbc.Card([
-                        dbc.CardBody([
-                            dcc.Graph(id='indicator-graphic')
-                ])
-            ], className="mb-4")
 map_chart = dbc.Card([
                 dbc.CardBody([
                     dcc.Graph(id="map-graph")
@@ -116,14 +111,19 @@ map_chart = dbc.Card([
                 ], className="mb-4")
 bubble_chart = dbc.Card([
                     dbc.CardBody([
-                        dcc.Graph(id="bubble-graph")
+                        dcc.Graph(id="bubble-graph", config={"scrollZoom": True})
                         ])
                     ], className="mb-4")
-metric_chart = dbc.Card([
+country_metric_chart = dbc.Card([
                     dbc.CardBody([
-                        dvc.Vega(id="metric-chart", spec={})
+                        dvc.Vega(id="country-metric-chart", spec={})
                         ])
                     ], className="mb-4")
+continent_metric_chart = dbc.Card([
+                            dbc.CardBody([
+                                dvc.Vega(id="continent-metric-chart", spec={})
+                                ])
+                            ], className="mb-4")
 # Layout
 app.layout = dbc.Container([
     dbc.Row([
@@ -155,10 +155,10 @@ app.layout = dbc.Container([
             # Third row for 2 charts
             dbc.Row([
                 dbc.Col([
-                    metric_chart
+                    country_metric_chart
                 ]),
                 dbc.Col([
-                    first_graphic_card
+                    continent_metric_chart
                 ]),
             ])
         ], md=8)  # 8/12 grid width for graph
@@ -222,23 +222,31 @@ def update_bubble(selected_continent, selected_year):
         return go.Figure()
     
     dff_bubble = dff.dropna(subset=["gdp", "co2_consump", "life_exp"])
+    
     fig_bubble = px.scatter(
         dff_bubble, x="gdp", y="life_exp", size="co2_consump", color="continent",
-        hover_name="country", title="Life Expectancy vs. GDP (Bubble Size = CO2)"
+        hover_name="country", title="Life Expectancy vs. GDP (Bubble Size = CO2)",
     )
-    fig_bubble.update_layout(margin={"r": 20, "t": 50, "l": 40, "b": 40})
+    
+    fig_bubble.update_layout(
+        margin={"r": 20, "t": 50, "l": 40, "b": 40},
+        xaxis=dict(type="log"),  # Log scale for better visualization of GDP
+        yaxis=dict(title="Life Expectancy"),
+        dragmode="pan",  # Allow panning when zoomed
+        hovermode="closest",
+    )
     
     return fig_bubble
 
-# Metric chart
+# Country Metric chart
 @app.callback(
-    Output('metric-chart', 'spec'),
+    Output('country-metric-chart', 'spec'),
     [Input("metric-dropdown-bottom", "value"),
      Input('continent-dropdown', 'value'),
      Input("country-dropdown", "value"),
      Input("year-slider-bottom", "value"),]
 )
-def update_metric(selected_metric, selected_continent, selected_country, year_range):
+def update_country_metric(selected_metric, selected_continent, selected_country, year_range):
     filtered_df = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
     
     if "(All)" not in selected_continent:
@@ -281,35 +289,58 @@ def update_metric(selected_metric, selected_continent, selected_country, year_ra
 
     return alt_chart.to_dict(format='vega')
 
-
-
+# Continent Metric chart
 @app.callback(
-    Output('indicator-graphic', 'figure'),
-    [Input('continent-dropdown', 'value'),
-     Input('country-dropdown', 'value'),
-     Input('year-slider-bottom', 'value')])
-def update_graph(continent, country, year_range):
-    filtered_df = df[(df['continent'] == continent) &
-                     (df['country'] == country) &
-                     (df['year'] >= year_range[0]) &
-                     (df['year'] <= year_range[1])]
+    Output('continent-metric-chart', 'spec'),
+    [Input("metric-dropdown-bottom", "value"),
+     Input('continent-dropdown', 'value'),
+     Input("year-slider-bottom", "value"),]
+)
+def update_continent_metric(selected_metric, selected_continent, year_range):
+    filtered_df = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
 
-    trace = go.Scatter(
-        x=filtered_df['year'],
-        y=filtered_df['life_exp'],
-        mode='lines+markers',
-        name='Life Expectancy'
+    # Filter by selected continents
+    if "(All)" not in selected_continent:
+        filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
+
+    if filtered_df.empty:
+        return alt.Chart(pd.DataFrame({'year': [], selected_metric: []})).mark_line().encode(
+            alt.X('year:O', title="Year"),
+            alt.Y(selected_metric, title=selected_metric),
+            alt.Color('continent:N', title="Continent")
+        ).properties(title="No data available").to_dict(format='vega')
+
+    # **Compute Average Metric per Continent**
+    continent_avg = (
+        filtered_df
+        .groupby(['year', 'continent'])[selected_metric]
+        .mean()
+        .reset_index()
     )
 
-    return {
-        'data': [trace],
-        'layout': go.Layout(
-            title=f'Life Expectancy for {country}',
-            xaxis={'title': 'Year'},
-            yaxis={'title': 'Life Expectancy'},
-            hovermode='closest'
-        )
-    }
+    # **Line Chart**
+    line = alt.Chart(continent_avg).mark_line().encode(
+        alt.X('year:O', title="Year"),
+        alt.Y(selected_metric, title=f"Avg {selected_metric}"),
+        alt.Color('continent:N', title="Continent"),
+        tooltip=['year', selected_metric, 'continent']
+    )
+
+    # **Points on the Line**
+    points = alt.Chart(continent_avg).mark_point(size=50, filled=True).encode(
+        alt.X('year:O', title="Year"),
+        alt.Y(selected_metric, title=f"Avg {selected_metric}"),
+        alt.Color('continent:N', title="Continent"),
+        tooltip=['year', selected_metric, 'continent']
+    )
+
+    # **Combine Line + Points**
+    alt_chart = (line + points).properties(
+        title=f"Average {selected_metric} Over Time by Continent",
+        width=600
+    ).interactive()
+
+    return alt_chart.to_dict(format='vega')
 
 if __name__ == '__main__':
     app.run_server(debug=True)
