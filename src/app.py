@@ -16,6 +16,10 @@ df = pd.read_csv('data/raw/gapminder_data_graphs.csv')
 df = df.dropna(subset=["country", "continent", "year", "life_exp", "hdi_index", 
                        "co2_consump", "gdp", "services"])
 unique_years = sorted(df["year"].unique())
+# Select only every 4 years to
+# unique_years = unique_years[::4]
+
+
 metric_options = [
     {"label": "Life Expectancy", "value": "life_exp"},
     {"label": "HDI", "value": "hdi_index"},
@@ -64,7 +68,7 @@ top_half = [
                 value=unique_years[0],
                 marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
                 step=None,
-                updatemode='drag'
+                updatemode='drag',
             ),
         ])
     ], className="mb-4", style={"backgroundColor": "#B97403", 
@@ -102,7 +106,7 @@ bottom_half = [
                 value=[min(unique_years), max(unique_years)],
                 marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
                 step=None,
-                updatemode='drag'
+                updatemode='drag',
             ),
         ])
     ], className="mb-4", style={"backgroundColor": "#B97403", 
@@ -169,7 +173,7 @@ continent_metric_chart = dbc.Card([
 app.layout = dbc.Container([
     dbc.Row([
         # First Column: Global widgets
-        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=4),  # 4/12 grid width for inputs
+        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=3),  # 3/12 grid width for inputs
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
@@ -192,7 +196,7 @@ app.layout = dbc.Container([
                     continent_metric_chart
                 ]),
             ])
-        ], md=8)  # 8/12 grid width for graph
+        ], md=9)  # 9/12 grid width for graph
     ])
 ], fluid=True)
 
@@ -226,8 +230,13 @@ def set_countries_value(available_options):
 def update_average_values(selected_continent, selected_year):
     # Filter dataset based on selected continent(s)
     filtered_df = df[df["year"] == selected_year]
+
+    # Filter dataset for previous year
+    previous_years = df[(df["year"] >= selected_year - 1) & (df["year"] < selected_year)]
+
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
+        previous_years = previous_years[previous_years["continent"].isin(selected_continent)]
 
     # Handle case where no data is available
     if filtered_df.empty:
@@ -238,24 +247,41 @@ def update_average_values(selected_continent, selected_year):
     avg_gdp = filtered_df["gdp"].mean()
     avg_service = filtered_df["services"].mean()
 
+    # Compute preceding 4-year averages
+    prev_avg_life = previous_years["life_exp"].mean()
+    prev_avg_gdp = previous_years["gdp"].mean()
+    prev_avg_service = previous_years["services"].mean()
+
+    #
+    def calculate_change(current, previous):
+        if previous == 0 or pd.isna(previous):
+            return "N/A"
+        change = ((current - previous) / previous) * 100
+        return f"{'▲' if change > 0 else '▼'} {abs(change):.2f}%"
+
+    # Compute percentage changes
+    percentage_change_life = calculate_change(avg_life, prev_avg_life)
+    percentage_change_gdp = calculate_change(avg_gdp, prev_avg_gdp)
+    percentage_change_service = calculate_change(avg_service, prev_avg_service)
+
     # cards to return
     _avg_life = [dbc.CardHeader('🌍 Average Longevity', style={'backgroundColor': '#B97403',
                                                                      'color': 'white',
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
-                dbc.CardBody(f'{avg_life:.2f} years', style={'textAlign': 'center',
+                dbc.CardBody(f'{avg_life:.2f} years {percentage_change_life}', style={'textAlign': 'center',
                                                                     'fontSize': '35px'})]
     _avg_gdp = [dbc.CardHeader('💰 Average GDP per Capita', style={'backgroundColor': '#B97403',
                                                                      'color': 'white',
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
-                dbc.CardBody(f'${avg_gdp:,.2f}', style={'textAlign': 'center',
+                dbc.CardBody(f'${int(avg_gdp):,} {percentage_change_gdp}', style={'textAlign': 'center',
                                                                     'fontSize': '35px'})]
     _avg_service = [dbc.CardHeader('⛑️ Average Service Workers Percentage', style={'backgroundColor': '#B97403',
                                                                      'color': 'white',
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
-                    dbc.CardBody(f'{avg_service:.2f}%', style={'textAlign': 'center',
+                    dbc.CardBody(f'{avg_service:.2f}% {percentage_change_service}', style={'textAlign': 'center',
                                                                     'fontSize': '35px'})]
     # Format the output
     return _avg_life, _avg_gdp, _avg_service
@@ -488,4 +514,5 @@ def update_continent_metric(selected_metric, selected_continent, year_range):
     return alt_chart.to_dict(format='vega')
 
 if __name__ == '__main__':
-    app.server.run(debug=True)
+    app.run_server(debug=True)
+
