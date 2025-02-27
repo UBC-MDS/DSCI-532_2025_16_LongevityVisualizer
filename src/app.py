@@ -21,14 +21,14 @@ metric_options = [
     {"label": "HDI", "value": "hdi_index"},
     {"label": "CO2 Emissions per Person (tonnes)", "value": "co2_consump"},
     {"label": "GDP per Capita (USD)", "value": "gdp"},
-    {"label": "Services (%)", "value": "services"},
+    {"label": "Service Workers Percentage (%)", "value": "services"},
 ]
 METRIC_LABELS = {
     "life_exp": "Life Expectancy",
     "hdi_index": "HDI",
     "co2_consump": "CO2 Emissions per Person (tonnes)",
     "gdp": "GDP per Capita (USD)",
-    "services": "Services (%)"
+    "services": "Service Workers Percentage (%)"
 }
 
 # Initialize the app with Bootstrap styling
@@ -318,6 +318,28 @@ def update_bubble(selected_continent, selected_year):
     
     dff_bubble = dff.dropna(subset=["gdp", "co2_consump", "life_exp"])
     
+    # **Define fixed colors for continents**
+    continent_colors = {
+        "Africa": "#1f77b4",   # Blue
+        "Asia": "#ff7f0e",     # Orange
+        "Europe": "#2ca02c",   # Green
+        "North America": "#d62728",  # Red
+        "Oceania": "#9467bd",  # Purple
+        "South America": "#8c564b"  # Brown
+    }
+
+    # x axis scale
+    global_gdp_min = df["gdp"].min()
+    global_gdp_max = df["gdp"].max()
+    # y axis scale
+    global_life_exp_min = df["life_exp"].min()
+    global_life_exp_max = df["life_exp"].max()
+    # bubble size
+    global_co2_min = df["co2_consump"].min()
+    global_co2_max = df["co2_consump"].max()
+    
+    unique_continents = sorted(df["continent"].dropna().unique()) 
+    
     fig_bubble = px.scatter(
         dff_bubble, 
         x="gdp", 
@@ -325,12 +347,13 @@ def update_bubble(selected_continent, selected_year):
         size="co2_consump", 
         color="continent",
         hover_name="country",
-        color_discrete_sequence=px.colors.qualitative.Dark24,
+        category_orders={"continent": unique_continents},
+        color_discrete_map=continent_colors,
     )
     
     fig_bubble.update_layout(
         title={
-            'text': f"<b>Life Expectancy vs .GDP in {selected_year}</b>",
+            'text': f"<b>Life Expectancy vs. GDP per Capita in {selected_year}</b>",
             'font': {'size': 16},
             'x': 0.1,
             'xanchor': 'left'
@@ -346,8 +369,10 @@ def update_bubble(selected_continent, selected_year):
             )
         ],
         margin={"r": 20, "t": 50, "l": 40, "b": 40},
-        xaxis=dict(type="log"),
-        yaxis=dict(title="Life Expectancy"),
+        xaxis=dict(title="GDP per Capita (USD)",
+                   range=[global_gdp_min, global_gdp_max + 10000]),
+        yaxis=dict(title="Life Expectancy",
+                   range=[global_life_exp_min, global_life_exp_max + 10]),
         dragmode="pan",
         hovermode="closest",
     )
