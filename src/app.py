@@ -488,4 +488,4 @@ def update_continent_metric(selected_metric, selected_continent, year_range):
     return alt_chart.to_dict(format='vega')
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.server.run(debug=True)
