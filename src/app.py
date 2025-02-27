@@ -96,18 +96,7 @@ bottom_half = [
                 value=[],
                 clearable=False,
                 style={"color": "black"}
-            ),
-            html.Br(),
-            html.Label('Select Year:'),
-            dcc.RangeSlider(
-                id="year-slider-bottom",
-                min=min(unique_years),
-                max=max(unique_years),
-                value=[min(unique_years), max(unique_years)],
-                marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
-                step=None,
-                updatemode='drag',
-            ),
+            )
         ])
     ], className="mb-4", style={"backgroundColor": "#B97403", 
                                 "padding": "15px",
@@ -410,11 +399,10 @@ def update_bubble(selected_continent, selected_year):
     Output('country-metric-chart', 'spec'),
     [Input("metric-dropdown-bottom", "value"),
      Input('continent-dropdown', 'value'),
-     Input("country-dropdown", "value"),
-     Input("year-slider-bottom", "value"),]
+     Input("country-dropdown", "value")]
 )
-def update_country_metric(selected_metric, selected_continent, selected_country, year_range):
-    filtered_df = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
+def update_country_metric(selected_metric, selected_continent, selected_country):
+    filtered_df = df
     
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
@@ -462,11 +450,10 @@ def update_country_metric(selected_metric, selected_continent, selected_country,
 @app.callback(
     Output('continent-metric-chart', 'spec'),
     [Input("metric-dropdown-bottom", "value"),
-     Input('continent-dropdown', 'value'),
-     Input("year-slider-bottom", "value"),]
+     Input('continent-dropdown', 'value')]
 )
-def update_continent_metric(selected_metric, selected_continent, year_range):
-    filtered_df = df[(df['year'] >= year_range[0]) & (df['year'] <= year_range[1])]
+def update_continent_metric(selected_metric, selected_continent):
+    filtered_df = df
 
     # Filter by selected continents
     if "(All)" not in selected_continent:
