@@ -29,7 +29,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 # Global widgets
 title = [
     dbc.Row([
-        html.H1('Longevity Visualizer'),
+        html.H1('Longevity Visualizer',
+                style={'color': 'white', 'textAlign': 'center'}),
         html.Br()
     ])
 ]
@@ -43,7 +44,8 @@ top_half = [
                 options=[{"label": "(All)", "value": "(All)"}] + 
                         [{'label': i, 'value': i} for i in df['continent'].unique()],
                 value='(All)',
-                clearable=False
+                clearable=False,
+                style={"color": "black"}
             ),
             html.Br(),
             html.Label('Select Year:'),
@@ -52,12 +54,16 @@ top_half = [
                 min=min(unique_years),
                 max=max(unique_years),
                 value=unique_years[0],
-                marks={str(y): str(y) for y in unique_years},
+                marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
                 step=None,
                 updatemode='drag'
             ),
         ])
-    ], className="mb-4")
+    ], className="mb-4", style={"backgroundColor": "#B97403", 
+                                "padding": "15px",
+                                "color": "white", 
+                                "height": "40vh",
+                                "fontSize": "20px"})
 ]
 bottom_half = [
     dbc.Card([
@@ -67,7 +73,8 @@ bottom_half = [
                 id="metric-dropdown-bottom", 
                 options=metric_options, 
                 value="life_exp", 
-                clearable=False
+                clearable=False,
+                style={"color": "black"}
             ),
             html.Br(),
             html.Label('Select Country(s):'),
@@ -75,7 +82,8 @@ bottom_half = [
                 id='country-dropdown',
                 multi=True,
                 value=[],
-                clearable=False
+                clearable=False,
+                style={"color": "black"}
             ),
             html.Br(),
             html.Label('Select Year:'),
@@ -84,12 +92,16 @@ bottom_half = [
                 min=min(unique_years),
                 max=max(unique_years),
                 value=[min(unique_years), max(unique_years)],
-                marks={str(y): str(y) for y in unique_years},
+                marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
                 step=None,
                 updatemode='drag'
             ),
         ])
-    ], className="mb-4")
+    ], className="mb-4", style={"backgroundColor": "#B97403", 
+                                "padding": "15px",
+                                "color": "white", 
+                                "height": "40vh",
+                                "fontSize": "20px"})
 ]
 widgets = [ 
            dbc.Row(title),
@@ -132,7 +144,7 @@ continent_metric_chart = dbc.Card([
 app.layout = dbc.Container([
     dbc.Row([
         # First Column: Global widgets
-        dbc.Col(widgets, style={"backgroundColor": "#fdd835", "padding": "15px", "height": "100vh"}, md=4),  # 4/12 grid width for inputs
+        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=4),  # 4/12 grid width for inputs
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
@@ -202,19 +214,19 @@ def update_average_values(selected_continent, selected_year):
     avg_service = filtered_df["services"].mean()
 
     # cards to return
-    _avg_life = [dbc.CardHeader('🌍 Average Longevity', style={'backgroundColor': 'rgb(25, 135, 140)',
+    _avg_life = [dbc.CardHeader('🌍 Average Longevity', style={'backgroundColor': '#B97403',
                                                                      'color': 'white',
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
                 dbc.CardBody(f'{avg_life:.2f} years', style={'textAlign': 'center',
                                                                     'fontSize': '35px'})]
-    _avg_gdp = [dbc.CardHeader('💰 Average GDP per Capita', style={'backgroundColor': 'rgb(25, 135, 140)',
+    _avg_gdp = [dbc.CardHeader('💰 Average GDP per Capita', style={'backgroundColor': '#B97403',
                                                                      'color': 'white',
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
                 dbc.CardBody(f'${avg_gdp:,.2f}', style={'textAlign': 'center',
                                                                     'fontSize': '35px'})]
-    _avg_service = [dbc.CardHeader('⛑️ Average Service Workers Percentage', style={'backgroundColor': 'rgb(25, 135, 140)',
+    _avg_service = [dbc.CardHeader('⛑️ Average Service Workers Percentage', style={'backgroundColor': '#B97403',
                                                                      'color': 'white',
                                                                      'textAlign': 'center',
                                                                      'fontSize': '20px'}),
