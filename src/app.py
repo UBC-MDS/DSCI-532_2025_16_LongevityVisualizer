@@ -19,15 +19,15 @@ unique_years = sorted(df["year"].unique())
 metric_options = [
     {"label": "Life Expectancy", "value": "life_exp"},
     {"label": "HDI", "value": "hdi_index"},
-    {"label": "CO2 Consumption", "value": "co2_consump"},
-    {"label": "GDP per Capita", "value": "gdp"},
+    {"label": "CO2 Emissions per Person (tonnes)", "value": "co2_consump"},
+    {"label": "GDP per Capita (USD)", "value": "gdp"},
     {"label": "Services (%)", "value": "services"},
 ]
 METRIC_LABELS = {
     "life_exp": "Life Expectancy",
     "hdi_index": "HDI",
-    "co2_consump": "CO2 Consumption",
-    "gdp": "GDP per Capita",
+    "co2_consump": "CO2 Emissions per Person (tonnes)",
+    "gdp": "GDP per Capita (USD)",
     "services": "Services (%)"
 }
 
@@ -274,12 +274,31 @@ def update_map(selected_continent, selected_year):
     if dff.empty:
         return go.Figure()
 
+    color_min = df["life_exp"].min()
+    color_max = df["life_exp"].max()
+    
     fig_map = px.choropleth(
-        dff, locations="country", locationmode="country names", color="life_exp",
-        hover_name="country", color_continuous_scale=px.colors.sequential.Viridis,
-        title=f"Life Expectancy ({selected_continent}, {selected_year})", projection="natural earth"
+        dff, 
+        locations="country", 
+        locationmode="country names", 
+        color="life_exp",
+        hover_name="country",
+        color_continuous_scale=[[0, "white"], [1, "darkgreen"]],
+        title=f"Life Expectancy ({selected_year})",  
+        projection="natural earth"
     )
-    fig_map.update_layout(margin={"r": 0, "t": 50, "l": 0, "b": 0})
+
+    fig_map.update_layout(
+        title={
+            'text': f"<b>Life Expectancy in {selected_year}</b>",
+            'font': {'size': 16},
+            'x': 0.1,
+            'xanchor': 'left'
+        },
+        coloraxis_colorbar=dict(title="Life Expectancy"),
+        coloraxis=dict(cmin=color_min, cmax=color_max),
+        margin={"r": 0, "t": 50, "l": 0, "b": 0}
+    )
     
     return fig_map
 
@@ -300,15 +319,36 @@ def update_bubble(selected_continent, selected_year):
     dff_bubble = dff.dropna(subset=["gdp", "co2_consump", "life_exp"])
     
     fig_bubble = px.scatter(
-        dff_bubble, x="gdp", y="life_exp", size="co2_consump", color="continent",
-        hover_name="country", title="Life Expectancy vs. GDP (Bubble Size = CO2)",
+        dff_bubble, 
+        x="gdp", 
+        y="life_exp", 
+        size="co2_consump", 
+        color="continent",
+        hover_name="country",
+        color_discrete_sequence=px.colors.qualitative.Dark24,
     )
     
     fig_bubble.update_layout(
+        title={
+            'text': f"<b>Life Expectancy vs .GDP in {selected_year}</b>",
+            'font': {'size': 16},
+            'x': 0.1,
+            'xanchor': 'left'
+        },
+        annotations=[
+            dict(
+                x=0, y=1,
+                xref='paper', yref='paper',
+                text="Bubble Size Represents CO2 Emissions per Person",
+                showarrow=False,
+                font=dict(size=9, color="gray"),
+                xanchor='left'
+            )
+        ],
         margin={"r": 20, "t": 50, "l": 40, "b": 40},
-        xaxis=dict(type="log"),  # Log scale for better visualization of GDP
+        xaxis=dict(type="log"),
         yaxis=dict(title="Life Expectancy"),
-        dragmode="pan",  # Allow panning when zoomed
+        dragmode="pan",
         hovermode="closest",
     )
     
