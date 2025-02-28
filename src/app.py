@@ -172,6 +172,7 @@ app.layout = dbc.Container(
                         "backgroundColor": "#B97403",
                         "padding": "15px",
                         "height": "115vh",
+
                     },
                     md=3,
                 ),  # 2/12 grid width for inputs
@@ -321,7 +322,6 @@ def update_average_values(selected_continent, selected_year):
             style={"textAlign": "center", "fontSize": "35px"},
         ),
         dbc.CardFooter(f" {percentage_change_service}", style={"textAlign": "center"}),
-    ]
     # Format the output
     return _avg_life, _avg_gdp, _avg_service
 
