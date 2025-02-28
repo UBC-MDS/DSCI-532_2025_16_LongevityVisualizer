@@ -69,7 +69,7 @@ top_half = [
                 max=max(unique_years),
                 value=unique_years[0],
                 marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
-                step=None,
+                step=1,
                 updatemode='drag',
             ),
         ])
@@ -103,8 +103,9 @@ bottom_half = [
     ], className="mb-4", style={"backgroundColor": "#B97403", 
                                 "padding": "15px",
                                 "color": "white", 
-                                "height": "30vh",
-                                "fontSize": "20px"})
+                                "height": "17vh",
+                                "fontSize": "20px",
+                                "marginTop": "120px"})
 ]
 
 credits = [
@@ -119,7 +120,8 @@ credits = [
     ], className="mb-4", style={"backgroundColor": "#B97403", 
                                 "padding": "15px",
                                 "color": "whitegray", 
-                                "fontSize": "12px"})
+                                "fontSize": "11px",
+                                "marginTop":"-30px"})
 ]
 
 widgets = [ 
@@ -160,11 +162,12 @@ continent_metric_chart = dbc.Card([
                                 dvc.Vega(id="continent-metric-chart", spec={})
                                 ])
                             ], className="mb-4")
+
 # Layout
 app.layout = dbc.Container([
     dbc.Row([
         # First Column: Global widgets
-        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=3),  # 3/12 grid width for inputs
+        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=2),  # 2/12 grid width for inputs
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
@@ -187,7 +190,7 @@ app.layout = dbc.Container([
                     continent_metric_chart
                 ]),
             ])
-        ], md=9)  # 9/12 grid width for graph
+        ], md=10)  # 10/12 grid width for graph
     ])
 ], fluid=True)
 
@@ -223,7 +226,7 @@ def update_average_values(selected_continent, selected_year):
     filtered_df = df[df["year"] == selected_year]
 
     # Filter dataset for previous year
-    previous_years = df[df["year"] == selected_year - 4]
+    previous_years = df[df["year"] == selected_year - 1]
 
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
@@ -504,4 +507,3 @@ def update_continent_metric(selected_metric, selected_continent):
 
 if __name__ == '__main__':
     app.server.run(debug=False)
-
