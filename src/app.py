@@ -171,7 +171,7 @@ app.layout = dbc.Container(
                     style={
                         "backgroundColor": "#B97403",
                         "padding": "15px",
-                        "height": "100vh",
+                        "height": "115vh",
                     },
                     md=3,
                 ),  # 2/12 grid width for inputs
@@ -266,7 +266,7 @@ def update_average_values(selected_continent, selected_year):
         if previous == 0 or pd.isna(previous):
             return "N/A"
         change = ((current - previous) / previous) * 100
-        return f"{'▲' if change > 0 else '▼'} {abs(change):.2f}%"
+        return f"{'▲' if change > 0 else '🔻'} {abs(change):.2f}%"
 
     # Compute percentage changes
     percentage_change_life = calculate_change(avg_life, prev_avg_life)
