@@ -171,7 +171,7 @@ app.layout = dbc.Container(
                     style={
                         "backgroundColor": "#B97403",
                         "padding": "15px",
-                        "height": "110vh",
+                        "height": "115vh",
                     },
                     md=3,
                 ),  # 2/12 grid width for inputs
