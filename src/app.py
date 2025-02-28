@@ -506,4 +506,3 @@ def update_continent_metric(selected_metric, selected_continent):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-
