@@ -16,8 +16,9 @@ df = pd.read_csv('data/raw/gapminder_data_graphs.csv')
 df = df.dropna(subset=["country", "continent", "year", "life_exp", "hdi_index", 
                        "co2_consump", "gdp", "services"])
 unique_years = sorted(df["year"].unique())
-# Select only every 4 years to
-# unique_years = unique_years[::4]
+
+# Select only every 4 years for slider
+unique_years = sorted(df["year"].unique())[::4]  
 
 
 metric_options = [
@@ -221,7 +222,7 @@ def update_average_values(selected_continent, selected_year):
     filtered_df = df[df["year"] == selected_year]
 
     # Filter dataset for previous year
-    previous_years = df[(df["year"] >= selected_year - 1) & (df["year"] < selected_year)]
+    previous_years = df[df["year"] == selected_year - 4]
 
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
