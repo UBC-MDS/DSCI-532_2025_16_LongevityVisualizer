@@ -68,7 +68,7 @@ top_half = [
                 max=max(unique_years),
                 value=unique_years[0],
                 marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
-                step=None,
+                step=1,
                 updatemode='drag',
             ),
         ])
@@ -225,7 +225,7 @@ def update_average_values(selected_continent, selected_year):
     filtered_df = df[df["year"] == selected_year]
 
     # Filter dataset for previous year
-    previous_years = df[df["year"] == selected_year - 4]
+    previous_years = df[df["year"] == selected_year - 1]
 
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
