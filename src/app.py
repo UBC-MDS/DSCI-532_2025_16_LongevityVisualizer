@@ -173,7 +173,7 @@ app.layout = dbc.Container(
                         "padding": "15px",
                         "height": "100vh",
                     },
-                    md=2,
+                    md=3,
                 ),  # 2/12 grid width for inputs
                 # Second Column: Charts
                 dbc.Col(
@@ -195,7 +195,7 @@ app.layout = dbc.Container(
                             ]
                         ),
                     ],
-                    md=10,
+                    md=9,
                 ),  # 10/12 grid width for graph
             ]
         )
