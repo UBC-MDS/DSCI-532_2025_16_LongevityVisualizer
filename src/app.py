@@ -9,16 +9,27 @@ import plotly.express as px
 import dash_vega_components as dvc
 from dash import Dash
 from datetime import datetime
-alt.data_transformers.enable('vegafusion')
+
+alt.data_transformers.enable("vegafusion")
 
 # Load the dataset
-df = pd.read_csv('data/raw/gapminder_data_graphs.csv')
-df = df.dropna(subset=["country", "continent", "year", "life_exp", "hdi_index", 
-                       "co2_consump", "gdp", "services"])
+df = pd.read_csv("data/raw/gapminder_data_graphs.csv")
+df = df.dropna(
+    subset=[
+        "country",
+        "continent",
+        "year",
+        "life_exp",
+        "hdi_index",
+        "co2_consump",
+        "gdp",
+        "services",
+    ]
+)
 unique_years = sorted(df["year"].unique())
 
 # Select only every 4 years for slider
-unique_years = sorted(df["year"].unique())[::4]  
+unique_years = sorted(df["year"].unique())[::4]
 
 
 metric_options = [
@@ -33,7 +44,7 @@ METRIC_LABELS = {
     "hdi_index": "HDI",
     "co2_consump": "CO2 Emissions per Person (tonnes)",
     "gdp": "GDP per Capita (USD)",
-    "services": "Service Workers Percentage (%)"
+    "services": "Service Workers Percentage (%)",
 }
 
 # Initialize the app with Bootstrap styling
@@ -42,184 +53,240 @@ server = app.server
 
 # Global widgets
 title = [
-    dbc.Row([
-        html.H1('Longevity Visualizer',
-                style={'color': 'white', 'textAlign': 'center'}),
-        html.Br()
-    ])
+    dbc.Row(
+        [
+            html.H1(
+                "Longevity Visualizer", style={"color": "white", "textAlign": "center"}
+            ),
+            html.Br(),
+            dcc.Markdown(
+                """This Dash app was developed by Team 16 of the 2025 MDS program to provide insights into longevity and affecting 
+                         factors around the world!""",
+                style={"color": "white", "textAlign": "left", "marginBottom": "5em"},
+            ),
+        ]
+    )
 ]
 top_half = [
-    dbc.Card([
-        dbc.CardBody([
-            html.Label('Select Continent(s):'),
-            dcc.Dropdown(
-                id='continent-dropdown',
-                multi=True,
-                options=[{"label": "(All)", "value": "(All)"}] + 
-                        [{'label': i, 'value': i} for i in df['continent'].unique()],
-                value='(All)',
-                clearable=False,
-                style={"color": "black"}
-            ),
-            html.Br(),
-            html.Label('Select Year:'),
-            dcc.Slider(
-                id="year-slider-top",
-                min=min(unique_years),
-                max=max(unique_years),
-                value=unique_years[0],
-                marks={str(y): {'label': str(y), 'style': {'color': 'white'}} for y in unique_years},
-                step=1,
-                updatemode='drag',
-            ),
-        ])
-    ], className="mb-4", style={"backgroundColor": "#B97403", 
-                                "padding": "15px",
-                                "color": "white", 
-                                "height": "40vh",
-                                "fontSize": "20px"})
+    dbc.Card(
+        [
+            dbc.CardBody(
+                [
+                    html.Label("Select Continent(s):"),
+                    dcc.Dropdown(
+                        id="continent-dropdown",
+                        multi=True,
+                        options=[{"label": "(All)", "value": "(All)"}]
+                        + [{"label": i, "value": i} for i in df["continent"].unique()],
+                        value="(All)",
+                        clearable=False,
+                        style={"color": "black"},
+                    ),
+                    html.Br(),
+                    html.Label("Select Year:"),
+                    dcc.Slider(
+                        id="year-slider-top",
+                        min=min(unique_years),
+                        max=max(unique_years),
+                        value=unique_years[0],
+                        marks={
+                            str(y): {"label": str(y), "style": {"color": "white"}}
+                            for y in unique_years
+                        },
+                        step=1,
+                        updatemode="drag",
+                    ),
+                ]
+            )
+        ],
+        className="mb-4",
+        style={
+            "backgroundColor": "#B97403",
+            "padding": "15px",
+            "color": "white",
+            "height": "40vh",
+            "fontSize": "20px",
+        },
+    )
 ]
 bottom_half = [
-    dbc.Card([
-        dbc.CardBody([
-            html.Label('Select Metric:'),
-            dcc.Dropdown(
-                id="metric-dropdown-bottom", 
-                options=metric_options, 
-                value="life_exp", 
-                clearable=False,
-                style={"color": "black"}
-            ),
-            html.Br(),
-            html.Label('Select Country(s):'),
-            dcc.Dropdown(
-                id='country-dropdown',
-                multi=True,
-                value=[],
-                clearable=False,
-                style={"color": "black"}
+    dbc.Card(
+        [
+            dbc.CardBody(
+                [
+                    html.Label("Select Metric:"),
+                    dcc.Dropdown(
+                        id="metric-dropdown-bottom",
+                        options=metric_options,
+                        value="life_exp",
+                        clearable=False,
+                        style={"color": "black"},
+                    ),
+                    html.Br(),
+                    html.Label("Select Country(s):"),
+                    dcc.Dropdown(
+                        id="country-dropdown",
+                        multi=True,
+                        value=[],
+                        clearable=False,
+                        style={"color": "black"},
+                    ),
+                ]
             )
-        ])
-    ], className="mb-4", style={"backgroundColor": "#B97403", 
-                                "padding": "15px",
-                                "color": "white", 
-                                "height": "17vh",
-                                "fontSize": "20px",
-                                "marginTop": "120px"})
+        ],
+        className="mb-4",
+        style={
+            "backgroundColor": "#B97403",
+            "padding": "15px",
+            "color": "white",
+            "height": "17vh",
+            "fontSize": "20px",
+            "marginTop": "120px",
+        },
+    )
 ]
 
 credits = [
-    dbc.Card([
-            dbc.CardBody([
-                html.P("This Dash app was developed by Team 16 of the 2025 MDS program to provide insights into longevity and affecting factors around the world!"),
-                html.P("Credits: Long Nguyen, Abdul Safdar, Chukwunonso Ebele-Muolokwu and Zhiwei Zhang"),
-                html.P("Data: Gapminder, generated by Alberto Vidal"),
-                html.P(["Check out the source code on ", html.A("GitHub", href="https://github.com/UBC-MDS/DSCI-532_2025_16_LongevityVisualizer", target="_blank", style={'color': 'white'})]),
-                html.P("Last updated: {}".format(datetime.now().strftime('%B %d, %Y')))
-            ]), 
-    ], className="mb-4", style={"backgroundColor": "#B97403", 
-                                "padding": "15px",
-                                "color": "whitegray", 
-                                "fontSize": "11px",
-                                "marginTop":"-30px"})
+    dbc.Card(
+        [
+            dbc.CardBody(
+                [
+                    html.P(
+                        "This Dash app was developed by Team 16 of the 2025 MDS program to provide insights into longevity and affecting factors around the world!"
+                    ),
+                    html.P(
+                        "Credits: Long Nguyen, Abdul Safdar, Chukwunonso Ebele-Muolokwu and Zhiwei Zhang"
+                    ),
+                    html.P("Data: Gapminder, generated by Alberto Vidal"),
+                    html.P(
+                        [
+                            "Check out the source code on ",
+                            html.A(
+                                "GitHub",
+                                href="https://github.com/UBC-MDS/DSCI-532_2025_16_LongevityVisualizer",
+                                target="_blank",
+                                style={"color": "white"},
+                            ),
+                        ]
+                    ),
+                    html.P(
+                        "Last updated: {}".format(datetime.now().strftime("%B %d, %Y"))
+                    ),
+                ]
+            ),
+        ],
+        className="mb-4",
+        style={
+            "backgroundColor": "#B97403",
+            "padding": "15px",
+            "color": "whitegray",
+            "fontSize": "11px",
+            "marginTop": "-30px",
+        },
+    )
 ]
 
-widgets = [ 
-           dbc.Row(title),
-           dbc.Row(top_half),
-           dbc.Row(bottom_half),
-           dbc.Row(credits)
-        ]
+widgets = [dbc.Row(title), dbc.Row(top_half), dbc.Row(bottom_half), dbc.Row(credits)]
 
 # Cards
-card_avg_life = dbc.Card(id='average_life')
-card_avg_service = dbc.Card(id='average_service')
-card_avg_gdp = dbc.Card(id='average_gdp')
-card_holder = dbc.Row([
-    dbc.Col(card_avg_life, md=4),
-    dbc.Col(card_avg_gdp, md=4),
-    dbc.Col(card_avg_service, md=4)
-], style={"paddingTop": "50px"})
+card_avg_life = dbc.Card(id="average_life")
+card_avg_service = dbc.Card(id="average_service")
+card_avg_gdp = dbc.Card(id="average_gdp")
+card_holder = dbc.Row(
+    [
+        dbc.Col(card_avg_life, md=4),
+        dbc.Col(card_avg_gdp, md=4),
+        dbc.Col(card_avg_service, md=4),
+    ],
+    style={"paddingTop": "50px"},
+)
 
 # Charts
-map_chart = dbc.Card([
-                dbc.CardBody([
-                    dcc.Graph(id="map-graph")
-                    ])
-                ], className="mb-4")
-bubble_chart = dbc.Card([
-                    dbc.CardBody([
-                        dcc.Graph(id="bubble-graph", config={"scrollZoom": True})
-                        ])
-                    ], className="mb-4")
-country_metric_chart = dbc.Card([
-                    dbc.CardBody([
-                        dvc.Vega(id="country-metric-chart", spec={})
-                        ])
-                    ], className="mb-4")
-continent_metric_chart = dbc.Card([
-                            dbc.CardBody([
-                                dvc.Vega(id="continent-metric-chart", spec={})
-                                ])
-                            ], className="mb-4")
+map_chart = dbc.Card([dbc.CardBody([dcc.Graph(id="map-graph")])], className="mb-4")
+bubble_chart = dbc.Card(
+    [dbc.CardBody([dcc.Graph(id="bubble-graph", config={"scrollZoom": True})])],
+    className="mb-4",
+)
+country_metric_chart = dbc.Card(
+    [dbc.CardBody([dvc.Vega(id="country-metric-chart", spec={})])], className="mb-4"
+)
+continent_metric_chart = dbc.Card(
+    [dbc.CardBody([dvc.Vega(id="continent-metric-chart", spec={})])], className="mb-4"
+)
 
 # Layout
-app.layout = dbc.Container([
-    dbc.Row([
-        # First Column: Global widgets
-        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=2),  # 2/12 grid width for inputs
-        # Second Column: Charts
-        dbc.Col([
-            # First row for 3 cards
-            dbc.Row(card_holder, className="mb-4"),
-            # Second row for 2 charts
-            dbc.Row([
-                dbc.Col([
-                    map_chart
-                ]),
-                dbc.Col([
-                    bubble_chart
-                ]),
-            ]),
-            # Third row for 2 charts
-            dbc.Row([
-                dbc.Col([
-                    country_metric_chart
-                ]),
-                dbc.Col([
-                    continent_metric_chart
-                ]),
-            ])
-        ], md=10)  # 10/12 grid width for graph
-    ])
-], fluid=True)
+app.layout = dbc.Container(
+    [
+        dbc.Row(
+            [
+                # First Column: Global widgets
+                dbc.Col(
+                    widgets,
+                    style={
+                        "backgroundColor": "#B97403",
+                        "padding": "15px",
+                        "height": "100vh",
+                    },
+                    md=2,
+                ),  # 2/12 grid width for inputs
+                # Second Column: Charts
+                dbc.Col(
+                    [
+                        # First row for 3 cards
+                        dbc.Row(card_holder, className="mb-4"),
+                        # Second row for 2 charts
+                        dbc.Row(
+                            [
+                                dbc.Col([map_chart]),
+                                dbc.Col([bubble_chart]),
+                            ]
+                        ),
+                        # Third row for 2 charts
+                        dbc.Row(
+                            [
+                                dbc.Col([country_metric_chart]),
+                                dbc.Col([continent_metric_chart]),
+                            ]
+                        ),
+                    ],
+                    md=10,
+                ),  # 10/12 grid width for graph
+            ]
+        )
+    ],
+    fluid=True,
+)
 
 # Callbacks
 
+
 # Widget
 @app.callback(
-    Output('country-dropdown', 'options'),
-    Input('continent-dropdown', 'value'))
+    Output("country-dropdown", "options"), Input("continent-dropdown", "value")
+)
 def set_countries_options(selected_continent):
     if "(All)" in selected_continent:
         filtered_df = df
     else:
         filtered_df = df[df["continent"].isin(selected_continent)]
-    return [{"label": "(All)", "value": "(All)"}] + [{'label': i, 'value': i} for i in filtered_df['country'].unique()]
+    return [{"label": "(All)", "value": "(All)"}] + [
+        {"label": i, "value": i} for i in filtered_df["country"].unique()
+    ]
 
-@app.callback(
-    Output('country-dropdown', 'value'),
-    Input('country-dropdown', 'options'))
+
+@app.callback(Output("country-dropdown", "value"), Input("country-dropdown", "options"))
 def set_countries_value(available_options):
-    return available_options[1]['value']
+    return available_options[1]["value"]
+
 
 # Cards
 @app.callback(
-    [Output("average_life", "children"),
-     Output("average_gdp", "children"),
-    Output("average_service", "children")],
-    [Input("continent-dropdown", "value"),
-     Input("year-slider-top", "value")]
+    [
+        Output("average_life", "children"),
+        Output("average_gdp", "children"),
+        Output("average_service", "children"),
+    ],
+    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")],
 )
 def update_average_values(selected_continent, selected_year):
     # Filter dataset based on selected continent(s)
@@ -230,7 +297,9 @@ def update_average_values(selected_continent, selected_year):
 
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
-        previous_years = previous_years[previous_years["continent"].isin(selected_continent)]
+        previous_years = previous_years[
+            previous_years["continent"].isin(selected_continent)
+        ]
 
     # Handle case where no data is available
     if filtered_df.empty:
@@ -259,93 +328,126 @@ def update_average_values(selected_continent, selected_year):
     percentage_change_service = calculate_change(avg_service, prev_avg_service)
 
     # cards to return
-    _avg_life = [dbc.CardHeader('🌍 Average Longevity', style={'backgroundColor': '#B97403',
-                                                                     'color': 'white',
-                                                                     'textAlign': 'center',
-                                                                     'fontSize': '20px'}),
-                dbc.CardBody(f'{avg_life:.2f} years {percentage_change_life}', style={'textAlign': 'center',
-                                                                    'fontSize': '35px'})]
-    _avg_gdp = [dbc.CardHeader('💰 Average GDP per Capita', style={'backgroundColor': '#B97403',
-                                                                     'color': 'white',
-                                                                     'textAlign': 'center',
-                                                                     'fontSize': '20px'}),
-                dbc.CardBody(f'${int(avg_gdp):,} {percentage_change_gdp}', style={'textAlign': 'center',
-                                                                    'fontSize': '35px'})]
-    _avg_service = [dbc.CardHeader('⛑️ Average Service Workers Percentage', style={'backgroundColor': '#B97403',
-                                                                     'color': 'white',
-                                                                     'textAlign': 'center',
-                                                                     'fontSize': '20px'}),
-                    dbc.CardBody(f'{avg_service:.2f}% {percentage_change_service}', style={'textAlign': 'center',
-                                                                    'fontSize': '35px'})]
+    _avg_life = [
+        dbc.CardHeader(
+            "🌍 Average Longevity",
+            style={
+                "backgroundColor": "#B97403",
+                "color": "white",
+                "textAlign": "center",
+                "fontSize": "20px",
+            },
+        ),
+        dbc.CardBody(
+            f"{avg_life:.2f} years {percentage_change_life}",
+            style={"textAlign": "center", "fontSize": "35px"},
+        ),
+    ]
+    _avg_gdp = [
+        dbc.CardHeader(
+            "💰 Average GDP per Capita",
+            style={
+                "backgroundColor": "#B97403",
+                "color": "white",
+                "textAlign": "center",
+                "fontSize": "20px",
+            },
+        ),
+        dbc.CardBody(
+            f"${int(avg_gdp):,} {percentage_change_gdp}",
+            style={"textAlign": "center", "fontSize": "35px"},
+        ),
+    ]
+    _avg_service = [
+        dbc.CardHeader(
+            "⛑️ Average Service Workers Percentage",
+            style={
+                "backgroundColor": "#B97403",
+                "color": "white",
+                "textAlign": "center",
+                "fontSize": "20px",
+            },
+        ),
+        dbc.CardBody(
+            f"{avg_service:.2f}% {percentage_change_service}",
+            style={"textAlign": "center", "fontSize": "35px"},
+        ),
+    ]
     # Format the output
     return _avg_life, _avg_gdp, _avg_service
+
 
 # Map Chart
 @app.callback(
     Output("map-graph", "figure"),
-    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")]
+    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")],
 )
 def update_map(selected_continent, selected_year):
     if "(All)" in selected_continent:
         dff = df[df["year"] == selected_year]
     else:
-        dff = df[(df["year"] == selected_year) & (df["continent"].isin(selected_continent))]
+        dff = df[
+            (df["year"] == selected_year) & (df["continent"].isin(selected_continent))
+        ]
 
     if dff.empty:
         return go.Figure()
 
     color_min = df["life_exp"].min()
     color_max = df["life_exp"].max()
-    
+
     fig_map = px.choropleth(
-        dff, 
-        locations="country", 
-        locationmode="country names", 
+        dff,
+        locations="country",
+        locationmode="country names",
         color="life_exp",
         hover_name="country",
         color_continuous_scale=[[0, "white"], [1, "darkgreen"]],
-        title=f"Life Expectancy ({selected_year})",  
-        projection="natural earth"
+        title=f"Life Expectancy ({selected_year})",
+        projection="natural earth",
     )
 
     fig_map.update_layout(
         title={
-            'text': f"<b>Life Expectancy in {selected_year}</b>",
-            'font': {'size': 16},
-            'x': 0.1,
-            'xanchor': 'left'
+            "text": f"<b>Life Expectancy in {selected_year}</b>",
+            "font": {"size": 16},
+            "x": 0.1,
+            "xanchor": "left",
         },
         coloraxis_colorbar=dict(title="Life Expectancy"),
         coloraxis=dict(cmin=color_min, cmax=color_max),
-        margin={"r": 0, "t": 50, "l": 0, "b": 0}
+        margin={"r": 0, "t": 50, "l": 0, "b": 0},
     )
-    
+
     return fig_map
+
 
 # Bubble chart
 @app.callback(
     Output("bubble-graph", "figure"),
-    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")]
+    [Input("continent-dropdown", "value"), Input("year-slider-top", "value")],
 )
 def update_bubble(selected_continent, selected_year):
     if "(All)" in selected_continent:
         dff = df[df["year"] == selected_year]
     else:
-        dff = df[(df["year"] == selected_year) & (df["continent"].isin(selected_continent))]
+        dff = df[
+            (df["year"] == selected_year) & (df["continent"].isin(selected_continent))
+        ]
 
     if dff.empty:
         return go.Figure()
-    
+
     dff_bubble = dff.dropna(subset=["gdp", "co2_consump", "life_exp"])
-    
+
     # **Define fixed colors for continents**
     continent_colors = {
-        "Africa": "#1f77b4",   # Blue
-        "Asia": "#ff7f0e",     # Orange
-        "Europe": "#2ca02c",   # Green
+        "Africa": "#1f77b4",  # Blue
+        "Asia": "#ff7f0e",  # Orange
+        "Europe": "#2ca02c",  # Green
         "North America": "#d62728",  # Red
         "Oceania": "#9467bd",  # Purple
-        "South America": "#8c564b"  # Brown
+        "South America": "#8c564b",  # Brown
     }
 
     # x axis scale
@@ -357,105 +459,130 @@ def update_bubble(selected_continent, selected_year):
     # bubble size
     global_co2_min = df["co2_consump"].min()
     global_co2_max = df["co2_consump"].max()
-    
-    unique_continents = sorted(df["continent"].dropna().unique()) 
-    
+
+    unique_continents = sorted(df["continent"].dropna().unique())
+
     fig_bubble = px.scatter(
-        dff_bubble, 
-        x="gdp", 
-        y="life_exp", 
-        size="co2_consump", 
+        dff_bubble,
+        x="gdp",
+        y="life_exp",
+        size="co2_consump",
         color="continent",
         hover_name="country",
         category_orders={"continent": unique_continents},
         color_discrete_map=continent_colors,
     )
-    
+
     fig_bubble.update_layout(
         title={
-            'text': f"<b>Life Expectancy vs. GDP per Capita in {selected_year}</b>",
-            'font': {'size': 16},
-            'x': 0.1,
-            'xanchor': 'left'
+            "text": f"<b>Life Expectancy vs. GDP per Capita in {selected_year}</b>",
+            "font": {"size": 16},
+            "x": 0.1,
+            "xanchor": "left",
         },
         annotations=[
             dict(
-                x=0, y=1,
-                xref='paper', yref='paper',
+                x=0,
+                y=1,
+                xref="paper",
+                yref="paper",
                 text="Bubble Size Represents CO2 Emissions per Person",
                 showarrow=False,
                 font=dict(size=9, color="gray"),
-                xanchor='left'
+                xanchor="left",
             )
         ],
         margin={"r": 20, "t": 50, "l": 40, "b": 40},
-        xaxis=dict(title="GDP per Capita (USD)",
-                   range=[global_gdp_min, global_gdp_max + 10000]),
-        yaxis=dict(title="Life Expectancy",
-                   range=[global_life_exp_min, global_life_exp_max + 10]),
+        xaxis=dict(
+            title="GDP per Capita (USD)", range=[global_gdp_min, global_gdp_max + 10000]
+        ),
+        yaxis=dict(
+            title="Life Expectancy",
+            range=[global_life_exp_min, global_life_exp_max + 10],
+        ),
         dragmode="pan",
         hovermode="closest",
     )
-    
+
     return fig_bubble
+
 
 # Country Metric chart
 @app.callback(
-    Output('country-metric-chart', 'spec'),
-    [Input("metric-dropdown-bottom", "value"),
-     Input('continent-dropdown', 'value'),
-     Input("country-dropdown", "value")]
+    Output("country-metric-chart", "spec"),
+    [
+        Input("metric-dropdown-bottom", "value"),
+        Input("continent-dropdown", "value"),
+        Input("country-dropdown", "value"),
+    ],
 )
 def update_country_metric(selected_metric, selected_continent, selected_country):
     filtered_df = df
-    
+
     if "(All)" not in selected_continent:
         filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
 
     if isinstance(selected_country, str):
         selected_country = [selected_country]
-        
+
     if "(All)" not in selected_country:
         filtered_df = filtered_df[filtered_df["country"].isin(selected_country)]
 
-    metric_label = METRIC_LABELS.get(selected_metric, selected_metric)  # Default to variable name if not found
+    metric_label = METRIC_LABELS.get(
+        selected_metric, selected_metric
+    )  # Default to variable name if not found
 
     if filtered_df.empty:
-        return alt.Chart(pd.DataFrame({'year': [], selected_metric: []})).mark_line().encode(
-            alt.X('year:O', title="Year"),
-            alt.Y(selected_metric, title=metric_label),
-            alt.Color('country:N', title="Country")
-        ).properties(title="No data available").to_dict(format='vega')
+        return (
+            alt.Chart(pd.DataFrame({"year": [], selected_metric: []}))
+            .mark_line()
+            .encode(
+                alt.X("year:O", title="Year"),
+                alt.Y(selected_metric, title=metric_label),
+                alt.Color("country:N", title="Country"),
+            )
+            .properties(title="No data available")
+            .to_dict(format="vega")
+        )
 
     # **Line Chart**
-    line = alt.Chart(filtered_df).mark_line().encode(
-        alt.X('year:O', title="Year"),
-        alt.Y(selected_metric, title=metric_label),
-        alt.Color('country:N', title="Country"),
-        tooltip=['year', selected_metric, 'country']
+    line = (
+        alt.Chart(filtered_df)
+        .mark_line()
+        .encode(
+            alt.X("year:O", title="Year"),
+            alt.Y(selected_metric, title=metric_label),
+            alt.Color("country:N", title="Country"),
+            tooltip=["year", selected_metric, "country"],
+        )
     )
 
     # **Points on the Line**
-    points = alt.Chart(filtered_df).mark_point(size=50, filled=True).encode(
-        alt.X('year:O', title="Year"),
-        alt.Y(selected_metric, title=metric_label),
-        alt.Color('country:N', title="Country"),
-        tooltip=['year', selected_metric, 'country']
+    points = (
+        alt.Chart(filtered_df)
+        .mark_point(size=50, filled=True)
+        .encode(
+            alt.X("year:O", title="Year"),
+            alt.Y(selected_metric, title=metric_label),
+            alt.Color("country:N", title="Country"),
+            tooltip=["year", selected_metric, "country"],
+        )
     )
 
     # **Combine Line + Points**
-    alt_chart = (line + points).properties(
-        title=f"{metric_label} Over Time by Country",
-        width=600
-    ).interactive()
+    alt_chart = (
+        (line + points)
+        .properties(title=f"{metric_label} Over Time by Country", width=600)
+        .interactive()
+    )
 
-    return alt_chart.to_dict(format='vega')
+    return alt_chart.to_dict(format="vega")
+
 
 # Continent Metric chart
 @app.callback(
-    Output('continent-metric-chart', 'spec'),
-    [Input("metric-dropdown-bottom", "value"),
-     Input('continent-dropdown', 'value')]
+    Output("continent-metric-chart", "spec"),
+    [Input("metric-dropdown-bottom", "value"), Input("continent-dropdown", "value")],
 )
 def update_continent_metric(selected_metric, selected_continent):
     filtered_df = df
@@ -467,43 +594,56 @@ def update_continent_metric(selected_metric, selected_continent):
     metric_label = METRIC_LABELS.get(selected_metric, selected_metric)
 
     if filtered_df.empty:
-        return alt.Chart(pd.DataFrame({'year': [], selected_metric: []})).mark_line().encode(
-            alt.X('year:O', title="Year"),
-            alt.Y(selected_metric, title=metric_label),
-            alt.Color('continent:N', title="Continent")
-        ).properties(title="No data available").to_dict(format='vega')
+        return (
+            alt.Chart(pd.DataFrame({"year": [], selected_metric: []}))
+            .mark_line()
+            .encode(
+                alt.X("year:O", title="Year"),
+                alt.Y(selected_metric, title=metric_label),
+                alt.Color("continent:N", title="Continent"),
+            )
+            .properties(title="No data available")
+            .to_dict(format="vega")
+        )
 
     # **Compute Average Metric per Continent**
     continent_avg = (
-        filtered_df
-        .groupby(['year', 'continent'])[selected_metric]
-        .mean()
-        .reset_index()
+        filtered_df.groupby(["year", "continent"])[selected_metric].mean().reset_index()
     )
 
     # **Line Chart**
-    line = alt.Chart(continent_avg).mark_line().encode(
-        alt.X('year:O', title="Year"),
-        alt.Y(selected_metric, title=f"Avg {metric_label}"),
-        alt.Color('continent:N', title="Continent"),
-        tooltip=['year', selected_metric, 'continent']
+    line = (
+        alt.Chart(continent_avg)
+        .mark_line()
+        .encode(
+            alt.X("year:O", title="Year"),
+            alt.Y(selected_metric, title=f"Avg {metric_label}"),
+            alt.Color("continent:N", title="Continent"),
+            tooltip=["year", selected_metric, "continent"],
+        )
     )
 
     # **Points on the Line**
-    points = alt.Chart(continent_avg).mark_point(size=50, filled=True).encode(
-        alt.X('year:O', title="Year"),
-        alt.Y(selected_metric, title=f"Avg {metric_label}"),
-        alt.Color('continent:N', title="Continent"),
-        tooltip=['year', selected_metric, 'continent']
+    points = (
+        alt.Chart(continent_avg)
+        .mark_point(size=50, filled=True)
+        .encode(
+            alt.X("year:O", title="Year"),
+            alt.Y(selected_metric, title=f"Avg {metric_label}"),
+            alt.Color("continent:N", title="Continent"),
+            tooltip=["year", selected_metric, "continent"],
+        )
     )
 
     # **Combine Line + Points**
-    alt_chart = (line + points).properties(
-        title=f"Average {metric_label} Over Time by Continent",
-        width=600
-    ).interactive()
+    alt_chart = (
+        (line + points)
+        .properties(title=f"Average {metric_label} Over Time by Continent", width=600)
+        .interactive()
+    )
 
-    return alt_chart.to_dict(format='vega')
+    return alt_chart.to_dict(format="vega")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.server.run(debug=False)
