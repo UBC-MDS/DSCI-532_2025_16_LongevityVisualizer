@@ -518,7 +518,7 @@ def update_country_metric(selected_metric, selected_continent, selected_country)
     # **Combine Line + Points**
     alt_chart = (
         (line + points)
-        .properties(title=f"{metric_label} Over Time by Country", width=600)
+        .properties(title=f"{metric_label} Over Time by Country", width="container")
         .interactive()
     )
 
@@ -584,7 +584,9 @@ def update_continent_metric(selected_metric, selected_continent):
     # **Combine Line + Points**
     alt_chart = (
         (line + points)
-        .properties(title=f"Average {metric_label} Over Time by Continent", width=600)
+        .properties(
+            title=f"Average {metric_label} Over Time by Continent", width="container"
+        )
         .interactive()
     )
 
