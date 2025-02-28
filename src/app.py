@@ -102,8 +102,9 @@ bottom_half = [
     ], className="mb-4", style={"backgroundColor": "#B97403", 
                                 "padding": "15px",
                                 "color": "white", 
-                                "height": "30vh",
-                                "fontSize": "20px"})
+                                "height": "17vh",
+                                "fontSize": "20px",
+                                "marginTop": "120px"})
 ]
 
 credits = [
@@ -118,7 +119,8 @@ credits = [
     ], className="mb-4", style={"backgroundColor": "#B97403", 
                                 "padding": "15px",
                                 "color": "whitegray", 
-                                "fontSize": "12px"})
+                                "fontSize": "11px",
+                                "marginTop":"-30px"})
 ]
 
 widgets = [ 
@@ -164,7 +166,7 @@ continent_metric_chart = dbc.Card([
 app.layout = dbc.Container([
     dbc.Row([
         # First Column: Global widgets
-        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=2),  # 3/12 grid width for inputs
+        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=2),  # 2/12 grid width for inputs
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
@@ -187,7 +189,7 @@ app.layout = dbc.Container([
                     continent_metric_chart
                 ]),
             ])
-        ], md=10)  # 9/12 grid width for graph
+        ], md=10)  # 10/12 grid width for graph
     ])
 ], fluid=True)
 
