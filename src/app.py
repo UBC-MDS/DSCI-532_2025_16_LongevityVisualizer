@@ -264,7 +264,7 @@ def update_average_values(selected_continent, selected_year):
     #
     def calculate_change(current, previous):
         if previous == 0 or pd.isna(previous):
-            return "N/A"
+            return ""
         change = ((current - previous) / previous) * 100
         return f"{'▲' if change > 0 else '🔻'} {abs(change):.2f}%"
 
@@ -285,9 +285,10 @@ def update_average_values(selected_continent, selected_year):
             },
         ),
         dbc.CardBody(
-            f"{avg_life:.2f} years {percentage_change_life}",
+            f"{avg_life:.2f} years",
             style={"textAlign": "center", "fontSize": "35px"},
         ),
+        dbc.CardFooter(f"{percentage_change_life}", style={"textAlign": "center"}),
     ]
     _avg_gdp = [
         dbc.CardHeader(
@@ -300,9 +301,10 @@ def update_average_values(selected_continent, selected_year):
             },
         ),
         dbc.CardBody(
-            f"${int(avg_gdp):,} {percentage_change_gdp}",
+            f"${int(avg_gdp):,}",
             style={"textAlign": "center", "fontSize": "35px"},
         ),
+        dbc.CardFooter(f"{percentage_change_gdp}", style={"textAlign": "center"}),
     ]
     _avg_service = [
         dbc.CardHeader(
@@ -315,9 +317,10 @@ def update_average_values(selected_continent, selected_year):
             },
         ),
         dbc.CardBody(
-            f"{avg_service:.2f}% {percentage_change_service}",
+            f"{avg_service:.2f}%",
             style={"textAlign": "center", "fontSize": "35px"},
         ),
+        dbc.CardFooter(f" {percentage_change_service}", style={"textAlign": "center"}),
     ]
     # Format the output
     return _avg_life, _avg_gdp, _avg_service
