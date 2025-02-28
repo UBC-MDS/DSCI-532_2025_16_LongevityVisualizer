@@ -62,7 +62,7 @@ title = [
             dcc.Markdown(
                 """This Dash app was developed by Team 16 of the 2025 MDS program to provide insights into longevity and affecting 
                          factors around the world!""",
-                style={"color": "white", "textAlign": "left", "marginBottom": "5em"},
+                style={"color": "white", "textAlign": "left", "marginBottom": "6em"},
             ),
         ]
     )
@@ -94,7 +94,7 @@ top_half = [
                 updatemode="drag",
             )
         ],
-        style={"marginBottom": "10em"},
+        style={"marginBottom": "12em"},
     ),
 ]
 bottom_half = [
@@ -171,7 +171,7 @@ app.layout = dbc.Container(
                     style={
                         "backgroundColor": "#B97403",
                         "padding": "15px",
-                        "height": "115vh",
+                        "height": "110vh",
                     },
                     md=3,
                 ),  # 2/12 grid width for inputs
