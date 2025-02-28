@@ -98,40 +98,22 @@ top_half = [
     ),
 ]
 bottom_half = [
-    dbc.Card(
-        [
-            dbc.CardBody(
-                [
-                    html.Label("Select Metric:"),
-                    dcc.Dropdown(
-                        id="metric-dropdown-bottom",
-                        options=metric_options,
-                        value="life_exp",
-                        clearable=False,
-                        style={"color": "black"},
-                    ),
-                    html.Br(),
-                    html.Label("Select Country(s):"),
-                    dcc.Dropdown(
-                        id="country-dropdown",
-                        multi=True,
-                        value=[],
-                        clearable=False,
-                        style={"color": "black"},
-                    ),
-                ]
-            )
-        ],
-        className="mb-4",
-        style={
-            "backgroundColor": "#B97403",
-            "padding": "15px",
-            "color": "white",
-            "height": "17vh",
-            "fontSize": "20px",
-            "marginTop": "120px",
-        },
-    )
+    dcc.Markdown("**Select Metric:**", style={"color": "white"}),
+    dcc.Dropdown(
+        id="metric-dropdown-bottom",
+        options=metric_options,
+        value="life_exp",
+        clearable=False,
+        style={"color": "black", "marginBottom": "1em"},
+    ),
+    dcc.Markdown("**Select Country(s):**", style={"color": "white"}),
+    dcc.Dropdown(
+        id="country-dropdown",
+        multi=True,
+        value=[],
+        clearable=False,
+        style={"color": "black", "marginBottom": "1em"},
+    ),
 ]
 
 credits = [
