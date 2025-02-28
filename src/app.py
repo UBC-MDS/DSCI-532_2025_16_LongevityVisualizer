@@ -152,17 +152,13 @@ card_holder = dbc.Row(
 )
 
 # Charts
-map_chart = dbc.Card([dbc.CardBody([dcc.Graph(id="map-graph")])], className="mb-4")
-bubble_chart = dbc.Card(
-    [dbc.CardBody([dcc.Graph(id="bubble-graph", config={"scrollZoom": True})])],
-    className="mb-4",
+map_chart = dcc.Graph(id="map-graph", style={"margin-bottom": "30px"})
+bubble_chart = dcc.Graph(
+    id="bubble-graph", config={"scrollZoom": True}, style={"margin-bottom": "30px"}
 )
-country_metric_chart = dbc.Card(
-    [dbc.CardBody([dvc.Vega(id="country-metric-chart", spec={})])], className="mb-4"
-)
-continent_metric_chart = dbc.Card(
-    [dbc.CardBody([dvc.Vega(id="continent-metric-chart", spec={})])], className="mb-4"
-)
+country_metric_chart = dvc.Vega(id="country-metric-chart", spec={})
+
+continent_metric_chart = dvc.Vega(id="continent-metric-chart", spec={})
 
 # Layout
 app.layout = dbc.Container(
