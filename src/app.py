@@ -68,46 +68,34 @@ title = [
     )
 ]
 top_half = [
-    dbc.Card(
+    dcc.Markdown("**Select Continent(s):**", style={"color": "white"}),
+    dcc.Dropdown(
+        id="continent-dropdown",
+        multi=True,
+        options=[{"label": "(All)", "value": "(All)"}]
+        + [{"label": i, "value": i} for i in df["continent"].unique()],
+        value="(All)",
+        clearable=False,
+        style={"color": "black", "marginBottom": "1em"},
+    ),
+    dcc.Markdown("**Select Year:**", style={"color": "white"}),
+    html.Div(
         [
-            dbc.CardBody(
-                [
-                    html.Label("Select Continent(s):"),
-                    dcc.Dropdown(
-                        id="continent-dropdown",
-                        multi=True,
-                        options=[{"label": "(All)", "value": "(All)"}]
-                        + [{"label": i, "value": i} for i in df["continent"].unique()],
-                        value="(All)",
-                        clearable=False,
-                        style={"color": "black"},
-                    ),
-                    html.Br(),
-                    html.Label("Select Year:"),
-                    dcc.Slider(
-                        id="year-slider-top",
-                        min=min(unique_years),
-                        max=max(unique_years),
-                        value=unique_years[0],
-                        marks={
-                            str(y): {"label": str(y), "style": {"color": "white"}}
-                            for y in unique_years
-                        },
-                        step=1,
-                        updatemode="drag",
-                    ),
-                ]
+            dcc.Slider(
+                id="year-slider-top",
+                min=min(unique_years),
+                max=max(unique_years),
+                value=unique_years[0],
+                marks={
+                    str(y): {"label": str(y), "style": {"color": "white"}}
+                    for y in unique_years
+                },
+                step=1,
+                updatemode="drag",
             )
         ],
-        className="mb-4",
-        style={
-            "backgroundColor": "#B97403",
-            "padding": "15px",
-            "color": "white",
-            "height": "40vh",
-            "fontSize": "20px",
-        },
-    )
+        style={"marginBottom": "10em"},
+    ),
 ]
 bottom_half = [
     dbc.Card(
