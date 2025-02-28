@@ -38,6 +38,7 @@ METRIC_LABELS = {
 
 # Initialize the app with Bootstrap styling
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+server = app.server
 
 # Global widgets
 title = [
@@ -502,5 +503,5 @@ def update_continent_metric(selected_metric, selected_continent):
     return alt_chart.to_dict(format='vega')
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.server.run(debug=False)
 
