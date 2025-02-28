@@ -159,11 +159,12 @@ continent_metric_chart = dbc.Card([
                                 dvc.Vega(id="continent-metric-chart", spec={})
                                 ])
                             ], className="mb-4")
+
 # Layout
 app.layout = dbc.Container([
     dbc.Row([
         # First Column: Global widgets
-        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=3),  # 3/12 grid width for inputs
+        dbc.Col(widgets, style={"backgroundColor": "#B97403", "padding": "15px", "height": "100vh"}, md=2),  # 3/12 grid width for inputs
         # Second Column: Charts
         dbc.Col([
             # First row for 3 cards
@@ -186,7 +187,7 @@ app.layout = dbc.Container([
                     continent_metric_chart
                 ]),
             ])
-        ], md=9)  # 9/12 grid width for graph
+        ], md=10)  # 9/12 grid width for graph
     ])
 ], fluid=True)
 
