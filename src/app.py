@@ -129,8 +129,15 @@ credits = dcc.Markdown(
     dangerously_allow_html=True,
 )
 
-widgets = [dbc.Row(title), dbc.Row(top_half), dbc.Row(bottom_half), dbc.Row(credits)]
-
+widgets = [
+    dbc.Row(title),
+    html.Br(),
+    html.Br(),
+    dbc.Row(top_half),
+    html.Br(style={"line-height": "102px"}),
+    dbc.Row(bottom_half),
+    dbc.Row(credits),
+]
 # Cards
 card_avg_life = dbc.Card(id="average_life")
 card_avg_service = dbc.Card(id="average_service")
