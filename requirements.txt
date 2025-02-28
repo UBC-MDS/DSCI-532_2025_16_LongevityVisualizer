@@ -6,6 +6,6 @@ altair==5.5.*
 pandas==2.2.*
 vegafusion==2.0.*
 vl-convert-python==1.7.*
-Flask==3.1.*
+Flask==2.2.*
 Werkzeug==3.1.*
 geopandas==1.0.*
