@@ -17,7 +17,7 @@ In today’s rapidly changing world, access to comprehensive and interactive dat
   Explore the relationship between life expectancy and GDP per capita. The bubble sizes indicate CO2 consumption, helping you gauge environmental impact alongside economic metrics.
 
 - **Comparative Trend Analysis:**  
-  Use our bottom section to select metrics such as HDI, CO2, Life Expectancy, or Services (%) and compare these values across multiple continents via dynamic bar and line charts.
+  Use our bottom section to select metrics such as HDI, CO2, Life Expectancy, or Services (%) and compare these values across multiple countries via line charts.
 
 Dive into the dashboard to uncover patterns and insights that can inform decisions and spark discussions about global development.
 
@@ -28,11 +28,22 @@ If you encounter any issues or have questions, please open an issue on our GitHu
 ## Getting Started
 
 Begin your journey by exploring our dashboard and discovering global trends today!
+## Usage Instructions
+Check out the [Dashboard](https://dsci-532-2025-16-longevityvisualizer.onrender.com) deployed on Render!
+
+![Demo GIF](img/demo.gif)
+
+The gif above outlines an overview of the dashboard.
+
 ---
 
 ## For Developers and Contributors
 
 Interested in contributing to **Longevity Visualizer**? We welcome your help to enhance and expand the platform. Here’s how you can get started:
+
+### Check out Contributing Guidelines
+
+First, check out our [Contributing Guidelines](https://github.com/UBC-MDS/DSCI-532_2025_16_LongevityVisualizer/blob/main/CONTRIBUTING.md) before contributing to this project.
 
 ### Running the App Locally
 
@@ -51,7 +62,6 @@ Interested in contributing to **Longevity Visualizer**? We welcome your help to 
 4. **Run the application:** 
     ```bash
     python -m src.app
-
 
 ## License
 
