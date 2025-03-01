@@ -18,7 +18,13 @@ Compared to our initial plan, we made the following adjustments:
 
 1. **Added country-level data for line charts**: Since life expectancy varies widely within continents, we included country-level data in the scatter plot and first line chart to provide more detailed insights. 
 2. **Replaced the bar chart with a second line chart**: Instead of using a bar chart for continent-level comparisons, we found a line chart better captures trends over time. Since the scatter plot already represents continent-level differences via bubble size, the line chart fills the gap by providing temporal insights. 
-3. **Eliminated the second time slider**: Originally, we had two time sliders, but this added complexity. Now, line charts display the full time range, making trend analysis more intuitive. 
+3. **Eliminated the second time slider**: Originally, we had two time sliders, but this added complexity. Now, line charts display the full time range, making trend analysis more intuitive.
+
+### Further implement
+1. Input added: country dropdown, which allows users to select specific countries (not just continents) for deeper analysis. 
+2. Output added: 
+- Country-level line chart: shows metri trends over time for specific countries. 
+- Percentage in cards: displays key metrics with year-over-year percentage changes. 
 
 ## Intentional deviations from visualization practices
 
