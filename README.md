@@ -35,6 +35,13 @@ Check out the [Dashboard](https://dsci-532-2025-16-longevityvisualizer.onrender.
 
 The gif above outlines an overview of the dashboard.
 
+docs/readme
+To select a continent, use the corresponding drop-down menu. The corresponding cards and map and bubble charts will change depending on this selection.
+
+To select a year to view data for, use the slider. 
+
+To select a metric and country, use the dropdown slider. The corresponding line charts will change depending on this selection. 
+
 ---
 
 ## For Developers and Contributors
