@@ -207,6 +207,8 @@ def register_callbacks(app, df):
 
         unique_continents = sorted(df["continent"].dropna().unique())
 
+        metric_label = METRIC_LABELS.get(selected_metric, selected_metric) 
+
         fig_bubble = px.scatter(
             dff_bubble,
             x=selected_metric,
@@ -220,7 +222,7 @@ def register_callbacks(app, df):
 
         fig_bubble.update_layout(
             title={
-                "text": f"<b>Life Expectancy vs. {selected_metric.capitalize()} in {selected_year}</b>",
+                "text": f"<b>Life Expectancy vs. {metric_label} in {selected_year}</b>",
                 "font": {"size": 16},
                 "x": 0.1,
                 "xanchor": "left",
@@ -239,7 +241,7 @@ def register_callbacks(app, df):
             ],
             margin={"r": 20, "t": 50, "l": 40, "b": 40},
             xaxis=dict(
-                title=f"{selected_metric.capitalize()}",
+                title=metric_label,
                 range=[global_x_min, global_x_max + (global_x_max - global_x_min) * 0.1], 
 
             ),
