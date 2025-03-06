@@ -4,7 +4,7 @@ import altair as alt
 import plotly.express as px
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
-from data import METRIC_LABELS, CONTINENT_COLORS
+from src.data import METRIC_LABELS, CONTINENT_COLORS
 
 def register_callbacks(app, df):
     """Register all callback functions for the Dash app."""

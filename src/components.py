@@ -3,7 +3,7 @@ from dash import html, dcc
 import dash_bootstrap_components as dbc
 import dash_vega_components as dvc
 from datetime import datetime
-from data import METRIC_OPTIONS
+from src.data import METRIC_OPTIONS
 
 def create_title():
     """Create the dashboard title section."""
