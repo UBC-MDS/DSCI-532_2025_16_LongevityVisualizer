@@ -2,9 +2,9 @@ import dash
 import dash_bootstrap_components as dbc
 import altair as alt
 
-from data import load_data, get_unique_years
-from components import create_layout
-from callbacks import register_callbacks
+from src.data import load_data, get_unique_years
+from src.components import create_layout
+from src.callbacks import register_callbacks
 
 # Enable VegaFusion for Altair charts
 alt.data_transformers.enable("vegafusion")
