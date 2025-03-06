@@ -9,16 +9,16 @@ from src.callbacks import register_callbacks
 # Enable VegaFusion for Altair charts
 alt.data_transformers.enable("vegafusion")
 
+# Initialize the app with Bootstrap styling
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.title = "Longevity Visualizer"
+server = app.server  # Define server at module level for Gunicorn to find
+
 def main():
     # Load and preprocess data
     df = load_data()
     unique_years = get_unique_years(df)
     continents = df["continent"].unique()
-    
-    # Initialize the app with Bootstrap styling
-    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-    app.title = "Longevity Visualizer"
-    server = app.server
     
     # Set up the layout
     app.layout = create_layout(unique_years, continents)
@@ -28,6 +28,8 @@ def main():
     
     return app
 
+# Execute main function to configure the app
+app = main()
+
 if __name__ == "__main__":
-    app = main()
-    app.server.run(debug=False)
+    app.run_server(debug=False)  # Use run_server instead of server.run
