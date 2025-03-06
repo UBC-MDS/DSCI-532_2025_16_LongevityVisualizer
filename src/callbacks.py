@@ -178,9 +178,11 @@ def register_callbacks(app, df):
     # Callback to update the bubble chart
     @app.callback(
         Output("bubble-graph", "figure"),
-        [Input("continent-dropdown", "value"), Input("year-slider-top", "value")],
+        [Input("continent-dropdown", "value"), 
+         Input("year-slider-top", "value"), 
+         Input("metric-dropdown-bottom", "value")],
     )
-    def update_bubble(selected_continent, selected_year):
+    def update_bubble(selected_continent, selected_year, selected_metric):
         if "(All)" in selected_continent:
             dff = df[df["year"] == selected_year]
         else:
@@ -191,11 +193,11 @@ def register_callbacks(app, df):
         if dff.empty:
             return go.Figure()
 
-        dff_bubble = dff.dropna(subset=["gdp", "co2_consump", "life_exp"])
+        dff_bubble = dff.dropna(subset=[selected_metric, "co2_consump", "life_exp"])
 
         # x axis scale
-        global_gdp_min = df["gdp"].min()
-        global_gdp_max = df["gdp"].max()
+        global_x_min = df[selected_metric].min()
+        global_x_max = df[selected_metric].max()
         # y axis scale
         global_life_exp_min = df["life_exp"].min()
         global_life_exp_max = df["life_exp"].max()
@@ -207,7 +209,7 @@ def register_callbacks(app, df):
 
         fig_bubble = px.scatter(
             dff_bubble,
-            x="gdp",
+            x=selected_metric,
             y="life_exp",
             size="co2_consump",
             color="continent",
@@ -218,7 +220,7 @@ def register_callbacks(app, df):
 
         fig_bubble.update_layout(
             title={
-                "text": f"<b>Life Expectancy vs. GDP per Capita in {selected_year}</b>",
+                "text": f"<b>Life Expectancy vs. {selected_metric.capitalize()} in {selected_year}</b>",
                 "font": {"size": 16},
                 "x": 0.1,
                 "xanchor": "left",
@@ -237,7 +239,9 @@ def register_callbacks(app, df):
             ],
             margin={"r": 20, "t": 50, "l": 40, "b": 40},
             xaxis=dict(
-                title="GDP per Capita (USD)", range=[global_gdp_min, global_gdp_max + 10000]
+                title=f"{selected_metric.capitalize()}",
+                range=[global_x_min, global_x_max + (global_x_max - global_x_min) * 0.1], 
+
             ),
             yaxis=dict(
                 title="Life Expectancy",
