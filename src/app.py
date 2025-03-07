@@ -1,6 +1,11 @@
 import dash
 import dash_bootstrap_components as dbc
 import altair as alt
+import os
+import sys
+# Get the project root directory (parent of src/)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
 from src.data import load_data, get_unique_years
 from src.components import create_layout
