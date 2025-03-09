@@ -18,8 +18,9 @@ def register_callbacks(app, df, geo_df):
     def set_countries_options(selected_continent, clicked_region):
         print(clicked_region)
         print("clicked_region")
+        bool_check = clicked_region.get("select_region")
         # if clicked_region and "country" in clicked_region["select_region"]:
-        if clicked_region["select_region"]:
+        if bool_check:
             if "(All)" in selected_continent:
                 filtered_df = df
                 options = [{"label": "(All)", "value": "(All)"}] + [
@@ -203,11 +204,20 @@ def register_callbacks(app, df, geo_df):
             Input("continent-dropdown", "value"),
             Input("year-slider-top", "value"),
             Input("map-graph", "signalData"),
+            Input("metric-dropdown-bottom", "value"),
         ],
     )
-    def update_bubble(selected_continent, selected_year, clicked_region):
+    def update_bubble(
+        selected_continent, selected_year, clicked_region, selected_metric
+    ):
 
-        if clicked_region["select_region"]:
+        bool_check = clicked_region.get("select_region")
+
+        metric_label = METRIC_LABELS.get(
+            selected_metric, selected_metric
+        )  # Default to variable name if not found
+
+        if bool_check:
             if "(All)" in selected_continent:
                 dff = df[df["year"] == selected_year]
             else:
@@ -234,7 +244,7 @@ def register_callbacks(app, df, geo_df):
                 .mark_circle()
                 .encode(
                     x=alt.X("gdp:Q", title="GDP"),
-                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
+                    y=alt.Y(selected_metric, title=metric_label),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
@@ -257,7 +267,10 @@ def register_callbacks(app, df, geo_df):
                         alt.value(0.05),
                     ),
                 )
-                .properties(width="container")
+                .properties(
+                    width="container",
+                    title=f"Scatter plot of Life Expectancy against {metric_label}",
+                )
                 .interactive()
             )
         else:
@@ -287,7 +300,7 @@ def register_callbacks(app, df, geo_df):
                 .mark_circle()
                 .encode(
                     x=alt.X("gdp:Q", title="GDP"),
-                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
+                    y=alt.Y(selected_metric, title=metric_label),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
@@ -301,7 +314,10 @@ def register_callbacks(app, df, geo_df):
                         "continent:N",
                     ],
                 )
-                .properties(width="container")
+                .properties(
+                    width="container",
+                    title=f"Scatter plot of Life Expectancy against {metric_label}",
+                )
                 .interactive()
             )
         return chart.to_dict(format="vega")
