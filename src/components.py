@@ -49,7 +49,8 @@ def create_top_controls(unique_years, continents):
                         for y in unique_years
                     },
                     step=1,
-                    updatemode="drag",
+                    updatemode="mouseup",
+                    tooltip={"placement": "top", "always_visible": False}
                 )
             ],
             style={"marginBottom": "3rem"},
