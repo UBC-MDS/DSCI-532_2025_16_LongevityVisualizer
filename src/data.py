@@ -1,4 +1,5 @@
 import pandas as pd
+import geopandas as gpd
 
 def load_data():
     """Load and preprocess the Gapminder dataset."""
@@ -47,3 +48,8 @@ CONTINENT_COLORS = {
     "Oceania": "#9467bd",  # Purple
     "South America": "#8c564b",  # Brown
 }
+
+def load_geodata():
+    geo_df = gpd.read_file("data/processed/gapminder.json")
+
+    return geo_df
