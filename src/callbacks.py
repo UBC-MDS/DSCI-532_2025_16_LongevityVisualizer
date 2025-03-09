@@ -92,15 +92,28 @@ def register_callbacks(app, df, geo_df):
 
         # Helper function to calculate percentage change
         def calculate_change(current, previous):
-            if previous == 0 or pd.isna(previous):
-                return ""
+            if pd.isna(previous) or previous == 0 or pd.isna(current):
+                return "Previous year data not available", {"color": "#6c757d", "textAlign": "center", "marginBottom": "1px", "backgroundColor": "#f8f9fa"}
+    
             change = ((current - previous) / previous) * 100
-            return f"{'▲' if change > 0 else '🔻'} {abs(change):.2f}%"
+            arrow = "▲" if change > 0 else "🔻"
+            color = "green" if change > 0 else "red"
+            bg_color = "#d4edda" if change > 0 else "#f8d7da"  
+
+            return f"{arrow} {abs(change):.2f}% from last year", {
+                "color": color,
+                "textAlign": "center",
+                "marginBottom": "1px",
+                "backgroundColor": bg_color,  # Changes the footer color
+                "borderRadius": "5px",
+                "padding": "5px"
+            }
+
 
         # Compute percentage changes
-        percentage_change_life = calculate_change(avg_life, prev_avg_life)
-        percentage_change_gdp = calculate_change(avg_gdp, prev_avg_gdp)
-        percentage_change_service = calculate_change(avg_service, prev_avg_service)
+        percentage_change_life, style_life = calculate_change(avg_life, prev_avg_life)
+        percentage_change_gdp, style_gdp = calculate_change(avg_gdp, prev_avg_gdp)
+        percentage_change_service, style_service = calculate_change(avg_service, prev_avg_service)
 
         # cards to return
         _avg_life = [
@@ -117,8 +130,8 @@ def register_callbacks(app, df, geo_df):
                 f"{avg_life:.2f} years",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
-            dbc.CardFooter(f"{percentage_change_life}", style={"textAlign": "center"}),
-        ]
+            dbc.CardFooter(percentage_change_life, style=style_life)        
+            ]
         _avg_gdp = [
             dbc.CardHeader(
                 "💰 Average GDP per Capita",
@@ -133,7 +146,7 @@ def register_callbacks(app, df, geo_df):
                 f"${int(avg_gdp):,}",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
-            dbc.CardFooter(f"{percentage_change_gdp}", style={"textAlign": "center"}),
+            dbc.CardFooter(percentage_change_gdp, style=style_gdp)
         ]
         _avg_service = [
             dbc.CardHeader(
@@ -149,9 +162,7 @@ def register_callbacks(app, df, geo_df):
                 f"{avg_service:.2f}%",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
-            dbc.CardFooter(
-                f" {percentage_change_service}", style={"textAlign": "center"}
-            ),
+            dbc.CardFooter(percentage_change_service, style=style_service)
         ]
         # Format the output
         return _avg_life, _avg_gdp, _avg_service
