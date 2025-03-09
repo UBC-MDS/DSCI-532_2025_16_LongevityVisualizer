@@ -187,7 +187,7 @@ def create_layout(unique_years, continents):
                                 html.Div(
                                     widgets,
                                     style={
-                                        "backgroundColor": "#B97403",
+                                        "backgroundColor": "#4077A6",
                                         "padding": "1.5rem",
                                         "min-height": "100vh",
                                         "height": "auto",
