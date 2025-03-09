@@ -5,6 +5,7 @@ import dash_vega_components as dvc
 from datetime import datetime
 from src.data import METRIC_OPTIONS
 
+
 def create_title():
     """Create the dashboard title section."""
     return dbc.Row(
@@ -20,6 +21,7 @@ def create_title():
             ),
         ]
     )
+
 
 def create_top_controls(unique_years, continents):
     """Create the top section controls (continent dropdown and year slider)."""
@@ -54,6 +56,7 @@ def create_top_controls(unique_years, continents):
         ),
     ]
 
+
 def create_bottom_controls():
     """Create the bottom section controls (metric and country dropdowns)."""
     return [
@@ -61,7 +64,7 @@ def create_bottom_controls():
         dcc.Dropdown(
             id="metric-dropdown-bottom",
             options=METRIC_OPTIONS,
-            value="life_exp",
+            value="gdp",
             clearable=False,
             style={"color": "black", "marginBottom": "1rem"},
         ),
@@ -74,6 +77,7 @@ def create_bottom_controls():
             style={"color": "black", "marginBottom": "1rem"},
         ),
     ]
+
 
 def create_credits():
     """Create the credits section."""
@@ -90,17 +94,15 @@ def create_credits():
         dangerously_allow_html=True,
     )
 
+
 def create_cards():
     """Create the metric cards."""
-    card_style = {
-        "height": "100%",
-        "min-height": "100px"
-    }
-    
+    card_style = {"height": "100%", "min-height": "100px"}
+
     card_avg_life = dbc.Card(id="average_life", style=card_style)
     card_avg_service = dbc.Card(id="average_service", style=card_style)
     card_avg_gdp = dbc.Card(id="average_gdp", style=card_style)
-    
+
     return dbc.Row(
         [
             dbc.Col(card_avg_life, md=4, className="mb-3"),
@@ -111,52 +113,56 @@ def create_cards():
         style={"paddingTop": "2rem", "paddingBottom": "2rem"},
     )
 
+
 def create_charts():
     """Create the chart containers."""
     chart_style = {
-        "height": "100%", 
+        "height": "100%",
         "min-height": "300px",
         "margin-bottom": "1.5rem",
         "border": "1px solid #ddd",
-        "border-radius": "0.25rem"
+        "border-radius": "0.25rem",
     }
-    
-    map_chart = dcc.Graph(
-        id="map-graph", 
-        style=chart_style,
-        config={"responsive": True}
+
+    map_chart = dvc.Vega(
+        id="map-graph",
+        spec={},
+        # style={
+        #     "width": "100%",
+        # },
+        signalsToObserve=["select_region"],
     )
-    
-    bubble_chart = dcc.Graph(
-        id="bubble-graph", 
-        style=chart_style,
-        config={"scrollZoom": False, "responsive": True}
+
+    bubble_chart = dvc.Vega(
+        id="bubble-graph",
+        spec={},
+        # style={
+        #     "width": "100%",
+        #     "height": "100%",
+        # }
     )
-    
+
     country_metric_chart = dvc.Vega(
-        id="country-metric-chart", 
-        spec={},
-        style=chart_style
+        id="country-metric-chart", spec={}, style=chart_style
     )
-    
+
     continent_metric_chart = dvc.Vega(
-        id="continent-metric-chart", 
-        spec={},
-        style=chart_style
+        id="continent-metric-chart", spec={}, style=chart_style
     )
-    
+
     return {
         "map_chart": map_chart,
         "bubble_chart": bubble_chart,
         "country_metric_chart": country_metric_chart,
-        "continent_metric_chart": continent_metric_chart
+        "continent_metric_chart": continent_metric_chart,
     }
+
 
 def create_layout(unique_years, continents):
     """Create the main dashboard layout."""
     # Initialize chart containers
     charts = create_charts()
-    
+
     # Create sidebar widgets
     widgets = [
         create_title(),
@@ -165,63 +171,93 @@ def create_layout(unique_years, continents):
         html.Div(create_bottom_controls(), style={"marginTop": "2rem"}),
         html.Div(create_credits(), style={"marginTop": "2rem"}),
     ]
-    
+
     # Add custom CSS using a style tag in the app.css file or in a separate CSS file
     # Instead of using html.Style which doesn't exist in Dash
-    
+
     # Create layout
-    return html.Div([
-        dbc.Container(
-            [
-                dbc.Row(
-                    [
-                        # First Column: Global widgets
-                        dbc.Col(
-                            html.Div(
-                                widgets,
-                                style={
-                                    "backgroundColor": "#B97403",
-                                    "padding": "1.5rem",
-                                    "min-height": "100vh",
-                                    "height": "auto",
-                                    "position": "sticky",
-                                    "top": "0",
-                                    "overflowY": "auto"
-                                }
+    return html.Div(
+        [
+            dbc.Container(
+                [
+                    dbc.Row(
+                        [
+                            # First Column: Global widgets
+                            dbc.Col(
+                                html.Div(
+                                    widgets,
+                                    style={
+                                        "backgroundColor": "#B97403",
+                                        "padding": "1.5rem",
+                                        "min-height": "100vh",
+                                        "height": "auto",
+                                        "position": "sticky",
+                                        "top": "0",
+                                        "overflowY": "auto",
+                                    },
+                                ),
+                                xs=12,
+                                sm=12,
+                                md=3,
+                                lg=3,
+                                xl=3,
+                                className="sidebar-col",
                             ),
-                            xs=12, sm=12, md=3, lg=3, xl=3,
-                            className="sidebar-col"
-                        ),
-                        # Second Column: Charts
-                        dbc.Col(
-                            [
-                                # First row for 3 cards
-                                create_cards(),
-                                # Second row for 2 charts
-                                dbc.Row(
-                                    [
-                                        dbc.Col([charts["map_chart"]], xs=12, md=6, className="mb-4"),
-                                        dbc.Col([charts["bubble_chart"]], xs=12, md=6, className="mb-4"),
-                                    ],
-                                    className="g-3"
-                                ),
-                                # Third row for 2 charts
-                                dbc.Row(
-                                    [
-                                        dbc.Col([charts["country_metric_chart"]], xs=12, md=6, className="mb-4"),
-                                        dbc.Col([charts["continent_metric_chart"]], xs=12, md=6, className="mb-4"),
-                                    ],
-                                    className="g-3"
-                                ),
-                            ],
-                            xs=12, sm=12, md=9, lg=9, xl=9,
-                            className="content-col",
-                            style={"padding": "1.5rem"}
-                        ),
-                    ]
-                )
-            ],
-            fluid=True,
-            style={"minWidth": "768px"} # Ensures minimum width for better scaling
-        )
-    ])
+                            # Second Column: Charts
+                            dbc.Col(
+                                [
+                                    # First row for 3 cards
+                                    create_cards(),
+                                    # Second row for 2 charts
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [charts["map_chart"]],
+                                                xs=12,
+                                                md=6,
+                                                className="mb-4",
+                                            ),
+                                            dbc.Col(
+                                                [charts["bubble_chart"]],
+                                                xs=12,
+                                                md=6,
+                                                className="mb-4",
+                                            ),
+                                        ],
+                                        className="g-3",
+                                    ),
+                                    # Third row for 2 charts
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(
+                                                [charts["country_metric_chart"]],
+                                                xs=12,
+                                                md=6,
+                                                className="mb-4",
+                                            ),
+                                            dbc.Col(
+                                                [charts["continent_metric_chart"]],
+                                                xs=12,
+                                                md=6,
+                                                className="mb-4",
+                                            ),
+                                        ],
+                                        className="g-3",
+                                    ),
+                                ],
+                                xs=12,
+                                sm=12,
+                                md=9,
+                                lg=9,
+                                xl=9,
+                                className="content-col",
+                                style={"padding": "1.5rem"},
+                            ),
+                        ]
+                    )
+                ],
+                fluid=True,
+                style={"minWidth": "768px"},  # Ensures minimum width for better scaling
+            )
+        ]
+    )
