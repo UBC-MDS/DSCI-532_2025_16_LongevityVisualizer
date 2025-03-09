@@ -107,7 +107,7 @@ def register_callbacks(app, df, geo_df):
             dbc.CardHeader(
                 "🌍 Average Longevity",
                 style={
-                    "backgroundColor": "#B97403",
+                    "backgroundColor": "#4077A6",
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
@@ -123,7 +123,7 @@ def register_callbacks(app, df, geo_df):
             dbc.CardHeader(
                 "💰 Average GDP per Capita",
                 style={
-                    "backgroundColor": "#B97403",
+                    "backgroundColor": "#4077A6",
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
@@ -139,7 +139,7 @@ def register_callbacks(app, df, geo_df):
             dbc.CardHeader(
                 "⛑️ Average Service Workers Percentage",
                 style={
-                    "backgroundColor": "#B97403",
+                    "backgroundColor": "#4077A6",
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
