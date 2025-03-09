@@ -238,6 +238,11 @@ def register_callbacks(app, df, geo_df):
                 "Oceania": "#9467bd",  # Purple
                 "South America": "#8c564b",  # Brown
             }
+            
+            # Find min and max for consistent y-axis scaling
+            y_min = dff['life_exp'].min() * 0.95  # 5% buffer
+            y_max = dff['life_exp'].max() * 1.05  # 5% buffer
+            
             countries = clicked_region["select_region"]["country"]
             chart = (
                 alt.Chart(dff)
@@ -245,7 +250,11 @@ def register_callbacks(app, df, geo_df):
                 .encode(
                     # x=alt.X("gdp:Q", title="GDP"),
                     x=alt.X(selected_metric, title=metric_label),
-                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
+                    y=alt.Y(
+                        "life_exp:Q", 
+                        title="Life Expectancy",
+                        scale=alt.Scale(domain=[y_min, y_max], zero=False)
+                    ),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
@@ -295,14 +304,22 @@ def register_callbacks(app, df, geo_df):
                 "Oceania": "#9467bd",  # Purple
                 "South America": "#8c564b",  # Brown
             }
-
+            
+            # Find min and max for consistent y-axis scaling
+            y_min = dff['life_exp'].min() * 0.95  # 5% buffer
+            y_max = dff['life_exp'].max() * 1.05  # 5% buffer
+            
             chart = (
                 alt.Chart(dff)
                 .mark_circle()
                 .encode(
                     # x=alt.X("gdp:Q", title="GDP"),
                     x=alt.X(selected_metric, title=metric_label),
-                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
+                    y=alt.Y(
+                        "life_exp:Q", 
+                        title="Life Expectancy",
+                        scale=alt.Scale(domain=[y_min, y_max], zero=False)
+                    ),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
