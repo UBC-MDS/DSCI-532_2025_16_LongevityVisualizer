@@ -6,30 +6,52 @@ import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 from src.data import METRIC_LABELS, CONTINENT_COLORS
 
-def register_callbacks(app, df):
+
+def register_callbacks(app, df, geo_df):
     """Register all callback functions for the Dash app."""
-    
+
     # Callback to update country dropdown options based on selected continent
     @app.callback(
-        Output("country-dropdown", "options"), 
-        Input("continent-dropdown", "value")
+        [Output("country-dropdown", "options"), Output("country-dropdown", "value")],
+        [Input("continent-dropdown", "value"), Input("map-graph", "signalData")],
     )
-    def set_countries_options(selected_continent):
-        if "(All)" in selected_continent:
-            filtered_df = df
+    def set_countries_options(selected_continent, clicked_region):
+        print(clicked_region)
+        print("clicked_region")
+        # if clicked_region and "country" in clicked_region["select_region"]:
+        if clicked_region["select_region"]:
+            if "(All)" in selected_continent:
+                filtered_df = df
+                options = [{"label": "(All)", "value": "(All)"}] + [
+                    {"label": i, "value": i} for i in filtered_df["country"].unique()
+                ]
+                value = clicked_region["select_region"]["country"]
+                return options, value
+            else:
+                filtered_df = df[df["continent"].isin(selected_continent)]
+                options = [{"label": "(All)", "value": "(All)"}] + [
+                    {"label": i, "value": i} for i in filtered_df["country"].unique()
+                ]
+                value = clicked_region["select_region"]["country"]
+                return options, value
         else:
-            filtered_df = df[df["continent"].isin(selected_continent)]
-        return [{"label": "(All)", "value": "(All)"}] + [
-            {"label": i, "value": i} for i in filtered_df["country"].unique()
-        ]
+            if "(All)" in selected_continent:
+                filtered_df = df
+            else:
+                filtered_df = df[df["continent"].isin(selected_continent)]
+            options = [{"label": "(All)", "value": "(All)"}] + [
+                {"label": i, "value": i} for i in filtered_df["country"].unique()
+            ]
+            value = filtered_df["country"].unique()[0]
+            return options, value
 
     # Callback to set default country dropdown value
-    @app.callback(
-        Output("country-dropdown", "value"), 
-        Input("country-dropdown", "options")
-    )
-    def set_countries_value(available_options):
-        return available_options[1]["value"]
+    # @app.callback(
+    #     Output("country-dropdown", "value"),
+    #     Input("country-dropdown", "options")
+    # )
+    # def set_countries_value(available_options):
+    #     return available_options[1]["value"]
 
     # Callback to update the metric cards
     @app.callback(
@@ -126,134 +148,163 @@ def register_callbacks(app, df):
                 f"{avg_service:.2f}%",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
-            dbc.CardFooter(f" {percentage_change_service}", style={"textAlign": "center"}),
+            dbc.CardFooter(
+                f" {percentage_change_service}", style={"textAlign": "center"}
+            ),
         ]
         # Format the output
         return _avg_life, _avg_gdp, _avg_service
 
     # Callback to update the map chart
     @app.callback(
-        Output("map-graph", "figure"),
+        Output("map-graph", "spec"),
         [Input("continent-dropdown", "value"), Input("year-slider-top", "value")],
     )
     def update_map(selected_continent, selected_year):
         if "(All)" in selected_continent:
-            dff = df[df["year"] == selected_year]
+            dff = geo_df[geo_df["year"] == selected_year]
         else:
-            dff = df[
-                (df["year"] == selected_year) & (df["continent"].isin(selected_continent))
+            dff = geo_df[
+                (geo_df["year"] == selected_year)
+                & (geo_df["continent"].isin(selected_continent))
             ]
 
         if dff.empty:
-            return go.Figure()
+            # return go.Figure()
+            return {}
 
-        color_min = df["life_exp"].min()
-        color_max = df["life_exp"].max()
+        select = alt.selection_point(fields=["country"], name="select_region")
 
-        fig_map = px.choropleth(
-            dff,
-            locations="country",
-            locationmode="country names",
-            color="life_exp",
-            hover_name="country",
-            color_continuous_scale=[[0, "white"], [1, "darkgreen"]],
-            title=f"Life Expectancy ({selected_year})",
-            projection="natural earth",
+        map = (
+            (
+                alt.Chart(
+                    dff, width="container", title=f"Life expectancy in {selected_year}"
+                )
+                .mark_geoshape(stroke="black")
+                .encode(
+                    alt.Color("life_exp").title("Winner"),
+                    tooltip=["country", "life_exp"],
+                )
+            )
+            # .properties(width=600, heigth=600)
+            .add_params(select)
         )
 
-        fig_map.update_layout(
-            title={
-                "text": f"<b>Life Expectancy in {selected_year}</b>",
-                "font": {"size": 16},
-                "x": 0.1,
-                "xanchor": "left",
-            },
-            coloraxis_colorbar=dict(title="Life Expectancy"),
-            coloraxis=dict(cmin=color_min, cmax=color_max),
-            margin={"r": 0, "t": 50, "l": 0, "b": 0},
+        map_with_selection = map.encode(
+            opacity=alt.condition(select, alt.value(0.8), alt.value(0.2))
         )
 
-        return fig_map
+        return map_with_selection.interactive().to_dict(format="vega")
 
     # Callback to update the bubble chart
     @app.callback(
-        Output("bubble-graph", "figure"),
-        [Input("continent-dropdown", "value"), 
-         Input("year-slider-top", "value"), 
-         Input("metric-dropdown-bottom", "value")],
+        Output("bubble-graph", "spec"),
+        [
+            Input("continent-dropdown", "value"),
+            Input("year-slider-top", "value"),
+            Input("map-graph", "signalData"),
+        ],
     )
-    def update_bubble(selected_continent, selected_year, selected_metric):
-        if "(All)" in selected_continent:
-            dff = df[df["year"] == selected_year]
-        else:
-            dff = df[
-                (df["year"] == selected_year) & (df["continent"].isin(selected_continent))
-            ]
+    def update_bubble(selected_continent, selected_year, clicked_region):
 
-        if dff.empty:
-            return go.Figure()
+        if clicked_region["select_region"]:
+            if "(All)" in selected_continent:
+                dff = df[df["year"] == selected_year]
+            else:
+                dff = df[
+                    (df["year"] == selected_year)
+                    & (df["continent"].isin(selected_continent))
+                ]
 
-        dff_bubble = dff.dropna(subset=[selected_metric, "co2_consump", "life_exp"])
+            if dff.empty:
+                return {}
 
-        # x axis scale
-        global_x_min = df[selected_metric].min()
-        global_x_max = df[selected_metric].max()
-        # y axis scale
-        global_life_exp_min = df["life_exp"].min()
-        global_life_exp_max = df["life_exp"].max()
-        # bubble size
-        global_co2_min = df["co2_consump"].min()
-        global_co2_max = df["co2_consump"].max()
-
-        unique_continents = sorted(df["continent"].dropna().unique())
-
-        metric_label = METRIC_LABELS.get(selected_metric, selected_metric) 
-
-        fig_bubble = px.scatter(
-            dff_bubble,
-            x=selected_metric,
-            y="life_exp",
-            size="co2_consump",
-            color="continent",
-            hover_name="country",
-            category_orders={"continent": unique_continents},
-            color_discrete_map=CONTINENT_COLORS,
-        )
-
-        fig_bubble.update_layout(
-            title={
-                "text": f"<b>Life Expectancy vs. {metric_label} in {selected_year}</b>",
-                "font": {"size": 16},
-                "x": 0.1,
-                "xanchor": "left",
-            },
-            annotations=[
-                dict(
-                    x=0,
-                    y=1,
-                    xref="paper",
-                    yref="paper",
-                    text="Bubble Size Represents CO2 Emissions per Person",
-                    showarrow=False,
-                    font=dict(size=9, color="gray"),
-                    xanchor="left",
+            # **Define fixed colors for continents**
+            continent_colors = {
+                "Africa": "#1f77b4",  # Blue
+                "Asia": "#ff7f0e",  # Orange
+                "Europe": "#2ca02c",  # Green
+                "North America": "#d62728",  # Red
+                "Oceania": "#9467bd",  # Purple
+                "South America": "#8c564b",  # Brown
+            }
+            countries = clicked_region["select_region"]["country"]
+            chart = (
+                alt.Chart(dff)
+                .mark_circle()
+                .encode(
+                    x=alt.X("gdp:Q", title="GDP"),
+                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
+                    size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
+                    color=alt.Color(
+                        "continent:N",
+                        scale=alt.Scale(range=list(continent_colors.values())),
+                    ),
+                    tooltip=[
+                        "country:N",
+                        "gdp:Q",
+                        "life_exp:Q",
+                        "co2_consump:Q",
+                        "continent:N",
+                    ],
+                    opacity=alt.condition(
+                        alt.expr.if_(
+                            alt.expr.indexof(countries, alt.datum.country) != -1,
+                            True,
+                            False,
+                        ),
+                        alt.value(0.9),
+                        alt.value(0.05),
+                    ),
                 )
-            ],
-            margin={"r": 20, "t": 50, "l": 40, "b": 40},
-            xaxis=dict(
-                title=metric_label,
-                range=[global_x_min, global_x_max + (global_x_max - global_x_min) * 0.1], 
+                .properties(width="container")
+                .interactive()
+            )
+        else:
+            if "(All)" in selected_continent:
+                dff = df[df["year"] == selected_year]
+            else:
+                dff = df[
+                    (df["year"] == selected_year)
+                    & (df["continent"].isin(selected_continent))
+                ]
 
-            ),
-            yaxis=dict(
-                title="Life Expectancy",
-                range=[global_life_exp_min, global_life_exp_max + 10],
-            ),
-            dragmode="pan",
-            hovermode="closest",
-        )
+            if dff.empty:
+                return {}
 
-        return fig_bubble
+            # **Define fixed colors for continents**
+            continent_colors = {
+                "Africa": "#1f77b4",  # Blue
+                "Asia": "#ff7f0e",  # Orange
+                "Europe": "#2ca02c",  # Green
+                "North America": "#d62728",  # Red
+                "Oceania": "#9467bd",  # Purple
+                "South America": "#8c564b",  # Brown
+            }
+
+            chart = (
+                alt.Chart(dff)
+                .mark_circle()
+                .encode(
+                    x=alt.X("gdp:Q", title="GDP"),
+                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
+                    size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
+                    color=alt.Color(
+                        "continent:N",
+                        scale=alt.Scale(range=list(continent_colors.values())),
+                    ),
+                    tooltip=[
+                        "country:N",
+                        "gdp:Q",
+                        "life_exp:Q",
+                        "co2_consump:Q",
+                        "continent:N",
+                    ],
+                )
+                .properties(width="container")
+                .interactive()
+            )
+        return chart.to_dict(format="vega")
 
     # Callback to update the country-specific metric chart
     @app.callback(
@@ -329,7 +380,10 @@ def register_callbacks(app, df):
     # Callback to update the continent-level metric chart
     @app.callback(
         Output("continent-metric-chart", "spec"),
-        [Input("metric-dropdown-bottom", "value"), Input("continent-dropdown", "value")],
+        [
+            Input("metric-dropdown-bottom", "value"),
+            Input("continent-dropdown", "value"),
+        ],
     )
     def update_continent_metric(selected_metric, selected_continent):
         filtered_df = df
@@ -355,7 +409,9 @@ def register_callbacks(app, df):
 
         # Compute Average Metric per Continent
         continent_avg = (
-            filtered_df.groupby(["year", "continent"])[selected_metric].mean().reset_index()
+            filtered_df.groupby(["year", "continent"])[selected_metric]
+            .mean()
+            .reset_index()
         )
 
         # Line Chart
@@ -386,7 +442,8 @@ def register_callbacks(app, df):
         alt_chart = (
             (line + points)
             .properties(
-                title=f"Average {metric_label} Over Time by Continent", width="container"
+                title=f"Average {metric_label} Over Time by Continent",
+                width="container",
             )
             .interactive()
         )
