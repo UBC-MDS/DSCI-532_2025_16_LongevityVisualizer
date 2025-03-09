@@ -64,7 +64,7 @@ def create_bottom_controls():
         dcc.Dropdown(
             id="metric-dropdown-bottom",
             options=METRIC_OPTIONS,
-            value="life_exp",
+            value="gdp",
             clearable=False,
             style={"color": "black", "marginBottom": "1rem"},
         ),

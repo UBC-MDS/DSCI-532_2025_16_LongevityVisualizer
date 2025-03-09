@@ -243,8 +243,9 @@ def register_callbacks(app, df, geo_df):
                 alt.Chart(dff)
                 .mark_circle()
                 .encode(
-                    x=alt.X("gdp:Q", title="GDP"),
-                    y=alt.Y(selected_metric, title=metric_label),
+                    # x=alt.X("gdp:Q", title="GDP"),
+                    x=alt.X(selected_metric, title=metric_label),
+                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
@@ -299,8 +300,9 @@ def register_callbacks(app, df, geo_df):
                 alt.Chart(dff)
                 .mark_circle()
                 .encode(
-                    x=alt.X("gdp:Q", title="GDP"),
-                    y=alt.Y(selected_metric, title=metric_label),
+                    # x=alt.X("gdp:Q", title="GDP"),
+                    x=alt.X(selected_metric, title=metric_label),
+                    y=alt.Y("life_exp:Q", title="Life Expectancy"),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
