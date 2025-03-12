@@ -15,5 +15,7 @@ dependencies:
     - tabulate=0.9  # df.to_markdown()
     - lxml=5.3  # pd.read_html()
     - pip=25.0
+    - 
     - pip:
         - dash-vega-components
+        - flask-caching==2.3
