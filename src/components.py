@@ -100,9 +100,12 @@ def create_cards():
     """Create the metric cards."""
     card_style = {"height": "100%", "min-height": "100px"}
 
-    card_avg_life = dbc.Card(id="average_life", style=card_style)
-    card_avg_service = dbc.Card(id="average_service", style=card_style)
-    card_avg_gdp = dbc.Card(id="average_gdp", style=card_style)
+    card_avg_life = dcc.Loading(dbc.Card(id="average_life", style=card_style),
+                                type = 'circle')
+    card_avg_service = dcc.Loading(dbc.Card(id="average_service", style=card_style),
+                                   type = 'circle')
+    card_avg_gdp = dcc.Loading(dbc.Card(id="average_gdp", style=card_style),
+                               type = 'circle')
 
     return dbc.Row(
         [
@@ -125,30 +128,38 @@ def create_charts():
         "border-radius": "0.25rem",
     }
 
-    map_chart = dvc.Vega(
+    map_chart = dcc.Loading(dvc.Vega(
         id="map-graph",
         spec={},
         # style={
         #     "width": "100%",
         # },
         signalsToObserve=["select_region"],
+    ), 
+    type = 'circle'
     )
 
-    bubble_chart = dvc.Vega(
+    bubble_chart = dcc.Loading(dvc.Vega(
         id="bubble-graph",
         spec={},
         # style={
         #     "width": "100%",
         #     "height": "100%",
         # }
+    ), 
+    type = 'circle'
     )
 
-    country_metric_chart = dvc.Vega(
+    country_metric_chart = dcc.Loading(dvc.Vega(
         id="country-metric-chart", spec={}, style=chart_style
+    ), 
+    type = 'circle'
     )
 
-    continent_metric_chart = dvc.Vega(
+    continent_metric_chart = dcc.Loading(dvc.Vega(
         id="continent-metric-chart", spec={}, style=chart_style
+    ),
+    type = 'circle'
     )
 
     return {
