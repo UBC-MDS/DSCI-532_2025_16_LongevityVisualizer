@@ -1,8 +1,18 @@
 import pandas as pd
 import geopandas as gpd
 
+import os
+import pandas as pd
+
 def load_data():
-    """Load and preprocess the Gapminder dataset."""
+    """Load and preprocess the Gapminder dataset, saving it as a Parquet file."""
+    parquet_path = "data/processed/gapminder_data.parquet"
+    
+    # Load the parquet data
+    if os.path.exists(parquet_path):
+        return pd.read_parquet(parquet_path)
+
+    # Preprocessing raw data
     df = pd.read_csv("data/raw/gapminder_data_graphs.csv")
     df = df.dropna(
         subset=[
@@ -16,6 +26,11 @@ def load_data():
             "services",
         ]
     )
+    
+    # Save to Parquet for future use
+    os.makedirs("data/processed", exist_ok=True)  # Ensure the directory exists
+    df.to_parquet(parquet_path, engine="pyarrow", index=False)
+    
     return df
 
 def get_unique_years(df, step=4):
