@@ -1,9 +1,12 @@
 import pandas as pd
 import geopandas as gpd
+from src.cache_config import cache  
 
 import os
 import pandas as pd
 
+
+@cache.memoize()
 def load_data():
     """Load and preprocess the Gapminder dataset, saving it as a Parquet file."""
     parquet_path = "data/processed/gapminder_data.parquet"
@@ -64,6 +67,7 @@ CONTINENT_COLORS = {
     "South America": "#8c564b",  # Brown
 }
 
+@cache.memoize()
 def load_geodata():
     geo_df = gpd.read_file("data/processed/gapminder.json")
 
