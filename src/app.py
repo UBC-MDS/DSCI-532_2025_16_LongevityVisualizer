@@ -42,4 +42,4 @@ def main():
 app = main()
 
 if __name__ == "__main__":
-    app.run_server(debug=False)  # Use run_server instead of server.run
+    app.run_server(debug=True)  # Use run_server instead of server.run
