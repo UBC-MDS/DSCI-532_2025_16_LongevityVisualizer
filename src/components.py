@@ -125,8 +125,8 @@ def create_cards():
             dbc.Col(card_avg_gdp, md=4, className="mb-3"),
             dbc.Col(card_dynamic_metric, md=4, className="mb-3"),
         ],
-        className="g-3",
-        style={"paddingTop": "2rem", "paddingBottom": "2rem"},
+        className="g-3 align-items-start",
+        style={"paddingTop": "0rem", "paddingBottom": "2rem", "marginTop": "-1rem"},
     )
 
 

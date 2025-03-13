@@ -129,6 +129,8 @@ def register_callbacks(app, df, geo_df):
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
+                    "paddingTop": "1rem",
+                    "alignItems": "center",
                 },
             ),
             dbc.CardBody(
@@ -145,6 +147,8 @@ def register_callbacks(app, df, geo_df):
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
+                    "paddingTop": "1rem",
+                    "alignItems": "center",
                 },
             ),
             dbc.CardBody(
@@ -163,9 +167,27 @@ def register_callbacks(app, df, geo_df):
             "services": "🛠️"  # Service Workers Percentage
         }
         metric_emoji = METRIC_EMOJIS.get(selected_metric, "📊") 
+
+        # Metric name for dynamic card
         metric_label = METRIC_LABELS.get(
             selected_metric, selected_metric
         ) 
+
+        # Metric units for dynamic card
+        METRIC_UNITS = {
+            "gdp": "",
+            "life_exp": "years",
+            "hdi_index": "",
+            "co2_consump": "",
+            "services": "%",
+        }
+        metric_unit = METRIC_UNITS.get(selected_metric, "")
+
+        if selected_metric == "gdp":
+            formatted_value = f"${int(avg_dynamic_metric):,}"  
+        else:
+            formatted_value = f"{avg_dynamic_metric:.2f} {metric_unit}".strip()  
+
 
         _avg_dynamic_metric = [
             dbc.CardHeader(
@@ -174,11 +196,14 @@ def register_callbacks(app, df, geo_df):
                     "backgroundColor": "#4077A6", 
                     "color": "white", 
                     "textAlign": "center", 
-                    "fontSize": "20px"
+                    "paddingTop": "1.5rem",
+                    "fontSize": "20px", 
+                    "paddingTop": "1rem", 
+                    "alignItems": "center",
                     }
             ),
             dbc.CardBody(
-                f"{avg_dynamic_metric:.2f}", 
+                formatted_value,
                 style={"textAlign": "center", "fontSize": "35px"}
             ),
             dbc.CardFooter(percentage_change_dynamic_metric, style=style_dynamic_metric)
