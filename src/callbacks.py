@@ -91,16 +91,16 @@ def register_callbacks(app, df, geo_df):
         prev_avg_service = previous_years["services"].mean()
 
         # Helper function to calculate percentage change
-        def calculate_change(current, previous):
+        def calculate_change(current, previous, previous_year):
             if pd.isna(previous) or previous == 0 or pd.isna(current):
-                return "Previous year data not available", {"color": "#6c757d", "textAlign": "center", "marginBottom": "1px", "backgroundColor": "#f8f9fa"}
+                return f"No data for {previous_year}", {"color": "#6c757d", "textAlign": "center", "marginBottom": "1px", "backgroundColor": "#f8f9fa"}
     
             change = ((current - previous) / previous) * 100
             arrow = "▲" if change > 0 else "🔻"
             color = "green" if change > 0 else "red"
             bg_color = "#d4edda" if change > 0 else "#f8d7da"  
 
-            return f"{arrow} {abs(change):.2f}% from last year", {
+            return f"{arrow} {abs(change):.2f}% from {previous_year}", {
                 "color": color,
                 "textAlign": "center",
                 "marginBottom": "1px",
@@ -111,9 +111,10 @@ def register_callbacks(app, df, geo_df):
 
 
         # Compute percentage changes
-        percentage_change_life, style_life = calculate_change(avg_life, prev_avg_life)
-        percentage_change_gdp, style_gdp = calculate_change(avg_gdp, prev_avg_gdp)
-        percentage_change_service, style_service = calculate_change(avg_service, prev_avg_service)
+        percentage_change_life, style_life = calculate_change(avg_life, prev_avg_life, selected_year - 1)
+        percentage_change_gdp, style_gdp = calculate_change(avg_gdp, prev_avg_gdp, selected_year - 1)
+        percentage_change_service, style_service = calculate_change(avg_service, prev_avg_service, selected_year - 1)
+
 
         # cards to return
         _avg_life = [
@@ -194,7 +195,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .mark_geoshape(stroke="black")
                 .encode(
-                    alt.Color("life_exp").title("Winner"),
+                    alt.Color("life_exp").title("Life Expectancy"),
                     tooltip=["country", "life_exp"],
                 )
             )
