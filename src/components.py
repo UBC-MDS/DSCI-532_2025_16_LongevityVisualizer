@@ -69,6 +69,7 @@ def create_bottom_controls():
             clearable=False,
             style={"color": "black", "marginBottom": "1rem"},
         ),
+        html.Div(id="metric-definition", style={"color": "white", "fontSize": "14px", "marginBottom": "1rem"}), 
         dcc.Markdown("**Select Country(s):**", style={"color": "white"}),
         dcc.Dropdown(
             id="country-dropdown",
@@ -78,6 +79,7 @@ def create_bottom_controls():
             style={"color": "black", "marginBottom": "1rem"},
         ),
     ]
+
 
 
 def create_credits():
