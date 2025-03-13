@@ -496,3 +496,21 @@ def register_callbacks(app, df, geo_df):
         )
 
         return alt_chart.to_dict(format="vega")
+
+
+    #Metric definitions to map for the dropdown menu. 
+    METRIC_DEFINITIONS = {
+    "gdp": "GDP per capita is the total value of goods and services a country produces (Gross Domestic Product) divided by its population. It measures the average economic output per person, giving an idea of a country's standard of living.",
+    "life_exp": "Life expectancy indicates the number of years a person would be expected to live based on current health, living and mortality conditions.",
+    "hdi_index": "A measure of a country's overall development, considering life expectancy, education (literacy and schooling), and income per capita. It ranges from 0 to 1, with higher values indicating better development.",
+    "co2_consump": "The total amount of carbon dioxide emissions produced by a country, region, or individual, usually from burning fossil fuels for energy, transportation, and industry. It is often measured in metric tons per capita.",
+    "services": "Percentage of the workforce engaged in service industries. This includes workers who are part of the economy that provides non-tangible goods, such as healthcare, education, finance, retail, entertainment, and tourism, rather than physical products.",
+}
+
+    @app.callback(
+        Output("metric-definition", "children"),
+        Input("metric-dropdown-bottom", "value")
+    )
+    #Adds the mapped metric definitions for the drop down menu. 
+    def update_metric_definition(selected_metric):
+        return METRIC_DEFINITIONS.get(selected_metric, "Definition not available.")
