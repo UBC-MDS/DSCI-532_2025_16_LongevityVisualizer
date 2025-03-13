@@ -194,7 +194,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .mark_geoshape(stroke="black")
                 .encode(
-                    alt.Color("life_exp").title("Winner"),
+                    alt.Color("life_exp").title("Life Expectancy"),
                     tooltip=["country", "life_exp"],
                 )
             )
