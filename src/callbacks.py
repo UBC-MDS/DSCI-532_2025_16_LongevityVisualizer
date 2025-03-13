@@ -187,7 +187,7 @@ def register_callbacks(app, df, geo_df):
             return {}
 
         select = alt.selection_point(fields=["country"], name="select_region")
-
+        
         map = (
             (
                 alt.Chart(
