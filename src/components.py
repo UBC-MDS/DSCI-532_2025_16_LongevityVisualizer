@@ -163,13 +163,15 @@ def create_charts():
     )
 
     country_metric_chart = dcc.Loading(dvc.Vega(
-        id="country-metric-chart", spec={}, style=chart_style
+        id="country-metric-chart", spec={}, 
+        # style=chart_style
     ), 
     type = 'circle'
     )
 
     continent_metric_chart = dcc.Loading(dvc.Vega(
-        id="continent-metric-chart", spec={}, style=chart_style
+        id="continent-metric-chart", spec={}, 
+        # style=chart_style
     ),
     type = 'circle'
     )
