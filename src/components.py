@@ -104,19 +104,29 @@ def create_cards():
 
     card_avg_life = dcc.Loading(dbc.Card(id="average_life", style=card_style),
                                 type = 'circle')
-    card_avg_service = dcc.Loading(dbc.Card(id="average_service", style=card_style),
-                                   type = 'circle')
     card_avg_gdp = dcc.Loading(dbc.Card(id="average_gdp", style=card_style),
                                type = 'circle')
+    card_dynamic_metric = dcc.Loading(
+        dbc.Card(
+            dbc.CardBody([
+                html.H5(id="metric-title", className="card-title"),
+                html.H2(id="metric-value", className="display-4"),
+                html.P(id="metric-change", className="card-text", style={"color": "green"}),
+            ]),
+            id="dynamic-metric-card",
+            style=card_style
+        ),
+        type="circle"
+    )
 
     return dbc.Row(
         [
             dbc.Col(card_avg_life, md=4, className="mb-3"),
             dbc.Col(card_avg_gdp, md=4, className="mb-3"),
-            dbc.Col(card_avg_service, md=4, className="mb-3"),
+            dbc.Col(card_dynamic_metric, md=4, className="mb-3"),
         ],
-        className="g-3",
-        style={"paddingTop": "2rem", "paddingBottom": "2rem"},
+        className="g-3 align-items-start",
+        style={"paddingTop": "0rem", "paddingBottom": "2rem", "marginTop": "-1rem"},
     )
 
 

@@ -59,11 +59,15 @@ def register_callbacks(app, df, geo_df):
         [
             Output("average_life", "children"),
             Output("average_gdp", "children"),
-            Output("average_service", "children"),
+            Output("dynamic-metric-card", "children"),
         ],
-        [Input("continent-dropdown", "value"), Input("year-slider-top", "value")],
+        [
+            Input("continent-dropdown", "value"), 
+            Input("year-slider-top", "value"), 
+            Input("metric-dropdown-bottom", "value")
+         ],
     )
-    def update_average_values(selected_continent, selected_year):
+    def update_average_values(selected_continent, selected_year, selected_metric):
         # Filter dataset based on selected continent(s)
         filtered_df = df[df["year"] == selected_year]
 
@@ -83,12 +87,12 @@ def register_callbacks(app, df, geo_df):
         # Compute Averages
         avg_life = filtered_df["life_exp"].mean()
         avg_gdp = filtered_df["gdp"].mean()
-        avg_service = filtered_df["services"].mean()
+        avg_dynamic_metric = filtered_df[selected_metric].mean()
 
         # Compute preceding year averages
         prev_avg_life = previous_years["life_exp"].mean()
         prev_avg_gdp = previous_years["gdp"].mean()
-        prev_avg_service = previous_years["services"].mean()
+        prev_avg_dynamic_metric = previous_years[selected_metric].mean()
 
         # Helper function to calculate percentage change
         def calculate_change(current, previous, previous_year):
@@ -113,7 +117,7 @@ def register_callbacks(app, df, geo_df):
         # Compute percentage changes
         percentage_change_life, style_life = calculate_change(avg_life, prev_avg_life, selected_year - 1)
         percentage_change_gdp, style_gdp = calculate_change(avg_gdp, prev_avg_gdp, selected_year - 1)
-        percentage_change_service, style_service = calculate_change(avg_service, prev_avg_service, selected_year - 1)
+        percentage_change_dynamic_metric, style_dynamic_metric = calculate_change(avg_dynamic_metric, prev_avg_dynamic_metric, selected_year - 1)
 
 
         # cards to return
@@ -125,6 +129,8 @@ def register_callbacks(app, df, geo_df):
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
+                    "paddingTop": "1rem",
+                    "alignItems": "center",
                 },
             ),
             dbc.CardBody(
@@ -141,6 +147,8 @@ def register_callbacks(app, df, geo_df):
                     "color": "white",
                     "textAlign": "center",
                     "fontSize": "20px",
+                    "paddingTop": "1rem",
+                    "alignItems": "center",
                 },
             ),
             dbc.CardBody(
@@ -149,24 +157,60 @@ def register_callbacks(app, df, geo_df):
             ),
             dbc.CardFooter(percentage_change_gdp, style=style_gdp)
         ]
-        _avg_service = [
+
+        # Emoji for dynamic metric card
+        METRIC_EMOJIS = {
+            "gdp": "💰",  # GDP per capita
+            "life_exp": "🌍",  # Life expectancy
+            "hdi_index": "📚",  # Human Development Index
+            "co2_consump": "🌿",  # CO2 Consumption
+            "services": "🛠️"  # Service Workers Percentage
+        }
+        metric_emoji = METRIC_EMOJIS.get(selected_metric, "📊") 
+
+        # Metric name for dynamic card
+        metric_label = METRIC_LABELS.get(
+            selected_metric, selected_metric
+        ) 
+
+        # Metric units for dynamic card
+        METRIC_UNITS = {
+            "gdp": "",
+            "life_exp": "years",
+            "hdi_index": "",
+            "co2_consump": "",
+            "services": "%",
+        }
+        metric_unit = METRIC_UNITS.get(selected_metric, "")
+
+        if selected_metric == "gdp":
+            formatted_value = f"{int(avg_dynamic_metric):,}"  
+        else:
+            formatted_value = f"{avg_dynamic_metric:.2f} {metric_unit}".strip()  
+
+
+        _avg_dynamic_metric = [
             dbc.CardHeader(
-                "⛑️ Average Service Workers Percentage",
+                f"{metric_emoji} Average {metric_label}", 
                 style={
-                    "backgroundColor": "#4077A6",
-                    "color": "white",
-                    "textAlign": "center",
-                    "fontSize": "20px",
-                },
+                    "backgroundColor": "#4077A6", 
+                    "color": "white", 
+                    "textAlign": "center", 
+                    "paddingTop": "1.5rem",
+                    "fontSize": "20px", 
+                    "paddingTop": "1rem", 
+                    "alignItems": "center",
+                    }
             ),
             dbc.CardBody(
-                f"{avg_service:.2f}%",
-                style={"textAlign": "center", "fontSize": "35px"},
+                formatted_value,
+                style={"textAlign": "center", "fontSize": "35px"}
             ),
-            dbc.CardFooter(percentage_change_service, style=style_service)
-        ]
+            dbc.CardFooter(percentage_change_dynamic_metric, style=style_dynamic_metric)
+    ]
+
         # Format the output
-        return _avg_life, _avg_gdp, _avg_service
+        return _avg_life, _avg_gdp, _avg_dynamic_metric
 
     # Callback to update the map chart
     @app.callback(
@@ -299,7 +343,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .properties(
                     width="container",
-                    title=f"Scatter plot of Life Expectancy against {metric_label_title}",
+                    title=f"Life Expectancy against {metric_label}",
                 )
                 .interactive()
             )
@@ -355,7 +399,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .properties(
                     width="container",
-                    title=f"Scatter plot of Life Expectancy against {metric_label_title}",
+                    title=f"Life Expectancy against {metric_label}",
                 )
                 .interactive()
             )
