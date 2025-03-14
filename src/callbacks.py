@@ -193,7 +193,7 @@ def register_callbacks(app, df, geo_df):
                 alt.Chart(
                     dff, width="container", title=f"Life expectancy in {selected_year}"
                 )
-                .mark_geoshape(stroke="black")
+                .mark_geoshape(stroke="black", cursor='pointer')
                 .encode(
                     alt.Color("life_exp").title("Life Expectancy"),
                     tooltip=["country", "life_exp"],
