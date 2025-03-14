@@ -187,13 +187,13 @@ def register_callbacks(app, df, geo_df):
             return {}
 
         select = alt.selection_point(fields=["country"], name="select_region")
-        
+
         map = (
             (
                 alt.Chart(
                     dff, width="container", title=f"Life expectancy in {selected_year}"
                 )
-                .mark_geoshape(stroke="black")
+                .mark_geoshape(stroke="black", cursor='pointer')
                 .encode(
                     alt.Color("life_exp").title("Life Expectancy"),
                     tooltip=["country", "life_exp"],
@@ -228,6 +228,14 @@ def register_callbacks(app, df, geo_df):
         metric_label = METRIC_LABELS.get(
             selected_metric, selected_metric
         )  # Default to variable name if not found
+
+        metric_label_title = (
+        metric_label.replace("(USD)", "")
+        .replace("(%)", "")
+        .replace("(tonnes)", "")
+        .strip()
+        )
+
 
         if bool_check:
             if "(All)" in selected_continent:
@@ -270,7 +278,7 @@ def register_callbacks(app, df, geo_df):
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
-                        scale=alt.Scale(range=list(continent_colors.values())),
+                        scale=alt.Scale(domain=list(continent_colors.keys()), range=list(continent_colors.values())),
                     ),
                     tooltip=[
                         "country:N",
@@ -291,7 +299,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .properties(
                     width="container",
-                    title=f"Scatter plot of Life Expectancy against {metric_label}",
+                    title=f"Scatter plot of Life Expectancy against {metric_label_title}",
                 )
                 .interactive()
             )
@@ -347,7 +355,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .properties(
                     width="container",
-                    title=f"Scatter plot of Life Expectancy against {metric_label}",
+                    title=f"Scatter plot of Life Expectancy against {metric_label_title}",
                 )
                 .interactive()
             )
@@ -377,6 +385,13 @@ def register_callbacks(app, df, geo_df):
         metric_label = METRIC_LABELS.get(
             selected_metric, selected_metric
         )  # Default to variable name if not found
+
+        metric_label_title = (
+        metric_label.replace("(USD)", "")
+        .replace("(%)", "")
+        .replace("(tonnes)", "")
+        .strip()
+        )
 
         if filtered_df.empty:
             return (
@@ -418,7 +433,7 @@ def register_callbacks(app, df, geo_df):
         # Combine Line + Points
         alt_chart = (
             (line + points)
-            .properties(title=f"{metric_label} Over Time by Country", width="container")
+            .properties(title=f"{metric_label_title} Over Time by Country", width="container")
             .interactive()
         )
 
@@ -426,12 +441,12 @@ def register_callbacks(app, df, geo_df):
 
     # Callback to update the continent-level metric chart
     @app.callback(
-        Output("continent-metric-chart", "spec"),
-        [
-            Input("metric-dropdown-bottom", "value"),
-            Input("continent-dropdown", "value"),
-        ],
-    )
+    Output("continent-metric-chart", "spec"),
+    [
+        Input("metric-dropdown-bottom", "value"),
+        Input("continent-dropdown", "value"),
+    ],
+)
     def update_continent_metric(selected_metric, selected_continent):
         filtered_df = df
 
@@ -440,6 +455,13 @@ def register_callbacks(app, df, geo_df):
             filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
 
         metric_label = METRIC_LABELS.get(selected_metric, selected_metric)
+
+        metric_label_title = (
+        metric_label.replace("(USD)", "")
+        .replace("(%)", "")
+        .replace("(tonnes)", "")
+        .strip()
+        )
 
         if filtered_df.empty:
             return (
@@ -461,35 +483,56 @@ def register_callbacks(app, df, geo_df):
             .reset_index()
         )
 
-        # Line Chart
+        unique_continents = continent_avg["continent"].unique().tolist()
+        
+        continent_colors = {
+            "Africa": "#1f77b4",  # Blue
+            "Asia": "#ff7f0e",  # Orange
+            "Europe": "#2ca02c",  # Green
+            "North America": "#d62728",  # Red
+            "Oceania": "#9467bd",  # Purple
+            "South America": "#8c564b",  # Brown
+        }
+
+        # Ensure only colors for selected continents are used
+        selected_continent_colors = {k: v for k, v in continent_colors.items() if k in unique_continents}
+
         line = (
             alt.Chart(continent_avg)
             .mark_line()
             .encode(
                 alt.X("year:O", title="Year"),
                 alt.Y(selected_metric, title=f"Avg {metric_label}"),
-                alt.Color("continent:N", title="Continent"),
+                alt.Color(
+                    "continent:N",
+                    scale=alt.Scale(domain=list(selected_continent_colors.keys()), 
+                                    range=list(selected_continent_colors.values())),
+                    title="Continent"
+                ),
                 tooltip=["year", selected_metric, "continent"],
             )
         )
 
-        # Points on the Line
         points = (
             alt.Chart(continent_avg)
             .mark_point(size=50, filled=True)
             .encode(
                 alt.X("year:O", title="Year"),
                 alt.Y(selected_metric, title=f"Avg {metric_label}"),
-                alt.Color("continent:N", title="Continent"),
+                alt.Color(
+                    "continent:N",
+                    scale=alt.Scale(domain=list(selected_continent_colors.keys()), 
+                                    range=list(selected_continent_colors.values())),
+                    title="Continent"
+                ),
                 tooltip=["year", selected_metric, "continent"],
             )
         )
 
-        # Combine Line + Points
         alt_chart = (
             (line + points)
             .properties(
-                title=f"Average {metric_label} Over Time by Continent",
+                title=f"Average {metric_label_title} Over Time by Continent",
                 width="container",
             )
             .interactive()
