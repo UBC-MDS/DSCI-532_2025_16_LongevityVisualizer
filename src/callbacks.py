@@ -184,7 +184,7 @@ def register_callbacks(app, df, geo_df):
         metric_unit = METRIC_UNITS.get(selected_metric, "")
 
         if selected_metric == "gdp":
-            formatted_value = f"${int(avg_dynamic_metric):,}"  
+            formatted_value = f"{int(avg_dynamic_metric):,}"  
         else:
             formatted_value = f"{avg_dynamic_metric:.2f} {metric_unit}".strip()  
 
