@@ -229,6 +229,14 @@ def register_callbacks(app, df, geo_df):
             selected_metric, selected_metric
         )  # Default to variable name if not found
 
+        metric_label_title = (
+        metric_label.replace("(USD)", "")
+        .replace("(%)", "")
+        .replace("(tonnes)", "")
+        .strip()
+        )
+
+
         if bool_check:
             if "(All)" in selected_continent:
                 dff = df[df["year"] == selected_year]
@@ -291,7 +299,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .properties(
                     width="container",
-                    title=f"Scatter plot of Life Expectancy against {metric_label}",
+                    title=f"Scatter plot of Life Expectancy against {metric_label_title}",
                 )
                 .interactive()
             )
@@ -347,7 +355,7 @@ def register_callbacks(app, df, geo_df):
                 )
                 .properties(
                     width="container",
-                    title=f"Scatter plot of Life Expectancy against {metric_label}",
+                    title=f"Scatter plot of Life Expectancy against {metric_label_title}",
                 )
                 .interactive()
             )
@@ -377,6 +385,13 @@ def register_callbacks(app, df, geo_df):
         metric_label = METRIC_LABELS.get(
             selected_metric, selected_metric
         )  # Default to variable name if not found
+
+        metric_label_title = (
+        metric_label.replace("(USD)", "")
+        .replace("(%)", "")
+        .replace("(tonnes)", "")
+        .strip()
+        )
 
         if filtered_df.empty:
             return (
@@ -418,7 +433,7 @@ def register_callbacks(app, df, geo_df):
         # Combine Line + Points
         alt_chart = (
             (line + points)
-            .properties(title=f"{metric_label} Over Time by Country", width="container")
+            .properties(title=f"{metric_label_title} Over Time by Country", width="container")
             .interactive()
         )
 
@@ -440,6 +455,13 @@ def register_callbacks(app, df, geo_df):
             filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
 
         metric_label = METRIC_LABELS.get(selected_metric, selected_metric)
+
+        metric_label_title = (
+        metric_label.replace("(USD)", "")
+        .replace("(%)", "")
+        .replace("(tonnes)", "")
+        .strip()
+        )
 
         if filtered_df.empty:
             return (
@@ -510,7 +532,7 @@ def register_callbacks(app, df, geo_df):
         alt_chart = (
             (line + points)
             .properties(
-                title=f"Average {metric_label} Over Time by Continent",
+                title=f"Average {metric_label_title} Over Time by Continent",
                 width="container",
             )
             .interactive()
