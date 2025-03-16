@@ -62,10 +62,10 @@ def register_callbacks(app, df, geo_df):
             Output("dynamic-metric-card", "children"),
         ],
         [
-            Input("continent-dropdown", "value"), 
-            Input("year-slider-top", "value"), 
-            Input("metric-dropdown-bottom", "value")
-         ],
+            Input("continent-dropdown", "value"),
+            Input("year-slider-top", "value"),
+            Input("metric-dropdown-bottom", "value"),
+        ],
     )
     def update_average_values(selected_continent, selected_year, selected_metric):
         # Filter dataset based on selected continent(s)
@@ -97,12 +97,17 @@ def register_callbacks(app, df, geo_df):
         # Helper function to calculate percentage change
         def calculate_change(current, previous, previous_year):
             if pd.isna(previous) or previous == 0 or pd.isna(current):
-                return f"No data for {previous_year}", {"color": "#6c757d", "textAlign": "center", "marginBottom": "1px", "backgroundColor": "#f8f9fa"}
-    
+                return f"No data for {previous_year}", {
+                    "color": "#6c757d",
+                    "textAlign": "center",
+                    "marginBottom": "1px",
+                    "backgroundColor": "#f8f9fa",
+                }
+
             change = ((current - previous) / previous) * 100
             arrow = "▲" if change > 0 else "🔻"
             color = "green" if change > 0 else "red"
-            bg_color = "#d4edda" if change > 0 else "#f8d7da"  
+            bg_color = "#d4edda" if change > 0 else "#f8d7da"
 
             return f"{arrow} {abs(change):.2f}% from {previous_year}", {
                 "color": color,
@@ -110,15 +115,19 @@ def register_callbacks(app, df, geo_df):
                 "marginBottom": "1px",
                 "backgroundColor": bg_color,  # Changes the footer color
                 "borderRadius": "5px",
-                "padding": "5px"
+                "padding": "5px",
             }
 
-
         # Compute percentage changes
-        percentage_change_life, style_life = calculate_change(avg_life, prev_avg_life, selected_year - 1)
-        percentage_change_gdp, style_gdp = calculate_change(avg_gdp, prev_avg_gdp, selected_year - 1)
-        percentage_change_dynamic_metric, style_dynamic_metric = calculate_change(avg_dynamic_metric, prev_avg_dynamic_metric, selected_year - 1)
-
+        percentage_change_life, style_life = calculate_change(
+            avg_life, prev_avg_life, selected_year - 1
+        )
+        percentage_change_gdp, style_gdp = calculate_change(
+            avg_gdp, prev_avg_gdp, selected_year - 1
+        )
+        percentage_change_dynamic_metric, style_dynamic_metric = calculate_change(
+            avg_dynamic_metric, prev_avg_dynamic_metric, selected_year - 1
+        )
 
         # cards to return
         _avg_life = [
@@ -137,8 +146,8 @@ def register_callbacks(app, df, geo_df):
                 f"{avg_life:.2f} years",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
-            dbc.CardFooter(percentage_change_life, style=style_life)        
-            ]
+            dbc.CardFooter(percentage_change_life, style=style_life),
+        ]
         _avg_gdp = [
             dbc.CardHeader(
                 "💰 Average GDP per Capita",
@@ -155,7 +164,7 @@ def register_callbacks(app, df, geo_df):
                 f"${int(avg_gdp):,}",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
-            dbc.CardFooter(percentage_change_gdp, style=style_gdp)
+            dbc.CardFooter(percentage_change_gdp, style=style_gdp),
         ]
 
         # Emoji for dynamic metric card
@@ -164,14 +173,12 @@ def register_callbacks(app, df, geo_df):
             "life_exp": "🌍",  # Life expectancy
             "hdi_index": "📚",  # Human Development Index
             "co2_consump": "🌿",  # CO2 Consumption
-            "services": "🛠️"  # Service Workers Percentage
+            "services": "🛠️",  # Service Workers Percentage
         }
-        metric_emoji = METRIC_EMOJIS.get(selected_metric, "📊") 
+        metric_emoji = METRIC_EMOJIS.get(selected_metric, "📊")
 
         # Metric name for dynamic card
-        metric_label = METRIC_LABELS.get(
-            selected_metric, selected_metric
-        ) 
+        metric_label = METRIC_LABELS.get(selected_metric, selected_metric)
 
         # Metric units for dynamic card
         METRIC_UNITS = {
@@ -184,30 +191,30 @@ def register_callbacks(app, df, geo_df):
         metric_unit = METRIC_UNITS.get(selected_metric, "")
 
         if selected_metric == "gdp":
-            formatted_value = f"{int(avg_dynamic_metric):,}"  
+            formatted_value = f"{int(avg_dynamic_metric):,}"
         else:
-            formatted_value = f"{avg_dynamic_metric:.2f} {metric_unit}".strip()  
-
+            formatted_value = f"{avg_dynamic_metric:.2f} {metric_unit}".strip()
 
         _avg_dynamic_metric = [
             dbc.CardHeader(
-                f"{metric_emoji} Average {metric_label}", 
+                f"{metric_emoji} Average {metric_label}",
                 style={
-                    "backgroundColor": "#4077A6", 
-                    "color": "white", 
-                    "textAlign": "center", 
+                    "backgroundColor": "#4077A6",
+                    "color": "white",
+                    "textAlign": "center",
                     "paddingTop": "1.5rem",
-                    "fontSize": "20px", 
-                    "paddingTop": "1rem", 
+                    "fontSize": "20px",
+                    "paddingTop": "1rem",
                     "alignItems": "center",
-                    }
+                },
             ),
             dbc.CardBody(
-                formatted_value,
-                style={"textAlign": "center", "fontSize": "35px"}
+                formatted_value, style={"textAlign": "center", "fontSize": "35px"}
             ),
-            dbc.CardFooter(percentage_change_dynamic_metric, style=style_dynamic_metric)
-    ]
+            dbc.CardFooter(
+                percentage_change_dynamic_metric, style=style_dynamic_metric
+            ),
+        ]
 
         # Format the output
         return _avg_life, _avg_gdp, _avg_dynamic_metric
@@ -237,10 +244,17 @@ def register_callbacks(app, df, geo_df):
                 alt.Chart(
                     dff, width="container", title=f"Life expectancy in {selected_year}"
                 )
-                .mark_geoshape(stroke="black", cursor='pointer')
+                .mark_geoshape(stroke="black", cursor="pointer")
                 .encode(
-                    alt.Color("life_exp").title("Life Expectancy"),
-                    tooltip=["country", "life_exp"],
+                    color=alt.condition(
+                        alt.datum.is_empty,
+                        alt.Color("life_exp:Q", title="Life Expectancy"),
+                        alt.value("lightgray"),
+                    ),
+                    tooltip=[
+                        "country",
+                        alt.Tooltip("life_exp", title="Life Expectancy"),
+                    ],
                 )
             )
             # .properties(width=600, heigth=600)
@@ -274,12 +288,11 @@ def register_callbacks(app, df, geo_df):
         )  # Default to variable name if not found
 
         metric_label_title = (
-        metric_label.replace("(USD)", "")
-        .replace("(%)", "")
-        .replace("(tonnes)", "")
-        .strip()
+            metric_label.replace("(USD)", "")
+            .replace("(%)", "")
+            .replace("(tonnes)", "")
+            .strip()
         )
-
 
         if bool_check:
             if "(All)" in selected_continent:
@@ -302,11 +315,11 @@ def register_callbacks(app, df, geo_df):
                 "Oceania": "#9467bd",  # Purple
                 "South America": "#8c564b",  # Brown
             }
-            
+
             # Find min and max for consistent y-axis scaling
-            y_min = dff['life_exp'].min() * 0.95  # 5% buffer
-            y_max = dff['life_exp'].max() * 1.05  # 5% buffer
-            
+            y_min = dff["life_exp"].min() * 0.95  # 5% buffer
+            y_max = dff["life_exp"].max() * 1.05  # 5% buffer
+
             countries = clicked_region["select_region"]["country"]
             chart = (
                 alt.Chart(dff)
@@ -315,20 +328,23 @@ def register_callbacks(app, df, geo_df):
                     # x=alt.X("gdp:Q", title="GDP"),
                     x=alt.X(selected_metric, title=metric_label),
                     y=alt.Y(
-                        "life_exp:Q", 
+                        "life_exp:Q",
                         title="Life Expectancy",
-                        scale=alt.Scale(domain=[y_min, y_max], zero=False)
+                        scale=alt.Scale(domain=[y_min, y_max], zero=False),
                     ),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
-                        scale=alt.Scale(domain=list(continent_colors.keys()), range=list(continent_colors.values())),
+                        scale=alt.Scale(
+                            domain=list(continent_colors.keys()),
+                            range=list(continent_colors.values()),
+                        ),
                     ),
                     tooltip=[
                         "country:N",
                         "gdp:Q",
-                        "life_exp:Q",
-                        "co2_consump:Q",
+                        alt.Tooltip("life_exp", title="Life Expectancy"),
+                        alt.Tooltip("co2_consump", title="Co2 Consumption"),
                         "continent:N",
                     ],
                     opacity=alt.condition(
@@ -368,11 +384,11 @@ def register_callbacks(app, df, geo_df):
                 "Oceania": "#9467bd",  # Purple
                 "South America": "#8c564b",  # Brown
             }
-            
+
             # Find min and max for consistent y-axis scaling
-            y_min = dff['life_exp'].min() * 0.95  # 5% buffer
-            y_max = dff['life_exp'].max() * 1.05  # 5% buffer
-            
+            y_min = dff["life_exp"].min() * 0.95  # 5% buffer
+            y_max = dff["life_exp"].max() * 1.05  # 5% buffer
+
             chart = (
                 alt.Chart(dff)
                 .mark_circle()
@@ -380,20 +396,23 @@ def register_callbacks(app, df, geo_df):
                     # x=alt.X("gdp:Q", title="GDP"),
                     x=alt.X(selected_metric, title=metric_label),
                     y=alt.Y(
-                        "life_exp:Q", 
+                        "life_exp:Q",
                         title="Life Expectancy",
-                        scale=alt.Scale(domain=[y_min, y_max], zero=False)
+                        scale=alt.Scale(domain=[y_min, y_max], zero=False),
                     ),
                     size=alt.Size("co2_consump:Q", title="CO2 Consumption"),
                     color=alt.Color(
                         "continent:N",
-                        scale=alt.Scale(range=list(continent_colors.values())),
+                        scale=alt.Scale(
+                            domain=list(continent_colors.keys()),
+                            range=list(continent_colors.values()),
+                        ),
                     ),
                     tooltip=[
                         "country:N",
                         "gdp:Q",
-                        "life_exp:Q",
-                        "co2_consump:Q",
+                        alt.Tooltip("life_exp", title="Life Expectancy"),
+                        alt.Tooltip("co2_consump", title="Co2 Consumption"),
                         "continent:N",
                     ],
                 )
@@ -405,7 +424,6 @@ def register_callbacks(app, df, geo_df):
             )
         return chart.to_dict(format="vega")
 
-    # Callback to update the country-specific metric chart
     @app.callback(
         Output("country-metric-chart", "spec"),
         [
@@ -417,38 +435,69 @@ def register_callbacks(app, df, geo_df):
     def update_country_metric(selected_metric, selected_continent, selected_country):
         filtered_df = df
 
+        # `` Filter by continent if specific continents are selected
         if "(All)" not in selected_continent:
             filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
 
+        # Ensure selected_country is a list
         if isinstance(selected_country, str):
             selected_country = [selected_country]
 
+        # Check if selected_country is not "(All)", and filter
         if "(All)" not in selected_country:
             filtered_df = filtered_df[filtered_df["country"].isin(selected_country)]
 
-        metric_label = METRIC_LABELS.get(
-            selected_metric, selected_metric
-        )  # Default to variable name if not found
+        # ✅ Check if any of the selected countries actually exist in the dataset
+        # If none of the selected countries are present, return empty plot
+        countries_in_data = df["country"].unique()
+        if not any(country in countries_in_data for country in selected_country):
+            return (
+                alt.Chart(
+                    pd.DataFrame(
+                        {
+                            "year": [],
+                            selected_metric: [],
+                        }
+                    )
+                )
+                .mark_line()
+                .encode(
+                    alt.X("year:O", title="Year"),
+                    alt.Y(
+                        selected_metric,
+                        title=METRIC_LABELS.get(selected_metric, selected_metric),
+                    ),
+                    # alt.Color("country:N", title="Country"),
+                )
+                .properties(title="No data available for selected country")
+                .to_dict(format="vega")
+            )
 
-        metric_label_title = (
-        metric_label.replace("(USD)", "")
-        .replace("(%)", "")
-        .replace("(tonnes)", "")
-        .strip()
-        )
-
+        # Handle empty filtered dataframe case
         if filtered_df.empty:
             return (
                 alt.Chart(pd.DataFrame({"year": [], selected_metric: []}))
                 .mark_line()
                 .encode(
                     alt.X("year:O", title="Year"),
-                    alt.Y(selected_metric, title=metric_label),
+                    alt.Y(
+                        selected_metric,
+                        title=METRIC_LABELS.get(selected_metric, selected_metric),
+                    ),
                     alt.Color("country:N", title="Country"),
                 )
                 .properties(title="No data available")
                 .to_dict(format="vega")
             )
+
+        # Prepare metric label and title
+        metric_label = METRIC_LABELS.get(selected_metric, selected_metric)
+        metric_label_title = (
+            metric_label.replace("(USD)", "")
+            .replace("(%)", "")
+            .replace("(tonnes)", "")
+            .strip()
+        )
 
         # Line Chart
         line = (
@@ -477,7 +526,9 @@ def register_callbacks(app, df, geo_df):
         # Combine Line + Points
         alt_chart = (
             (line + points)
-            .properties(title=f"{metric_label_title} Over Time by Country", width="container")
+            .properties(
+                title=f"{metric_label_title} Over Time by Country", width="container"
+            )
             .interactive()
         )
 
@@ -485,12 +536,12 @@ def register_callbacks(app, df, geo_df):
 
     # Callback to update the continent-level metric chart
     @app.callback(
-    Output("continent-metric-chart", "spec"),
-    [
-        Input("metric-dropdown-bottom", "value"),
-        Input("continent-dropdown", "value"),
-    ],
-)
+        Output("continent-metric-chart", "spec"),
+        [
+            Input("metric-dropdown-bottom", "value"),
+            Input("continent-dropdown", "value"),
+        ],
+    )
     def update_continent_metric(selected_metric, selected_continent):
         filtered_df = df
 
@@ -501,10 +552,10 @@ def register_callbacks(app, df, geo_df):
         metric_label = METRIC_LABELS.get(selected_metric, selected_metric)
 
         metric_label_title = (
-        metric_label.replace("(USD)", "")
-        .replace("(%)", "")
-        .replace("(tonnes)", "")
-        .strip()
+            metric_label.replace("(USD)", "")
+            .replace("(%)", "")
+            .replace("(tonnes)", "")
+            .strip()
         )
 
         if filtered_df.empty:
@@ -528,7 +579,7 @@ def register_callbacks(app, df, geo_df):
         )
 
         unique_continents = continent_avg["continent"].unique().tolist()
-        
+
         continent_colors = {
             "Africa": "#1f77b4",  # Blue
             "Asia": "#ff7f0e",  # Orange
@@ -539,7 +590,9 @@ def register_callbacks(app, df, geo_df):
         }
 
         # Ensure only colors for selected continents are used
-        selected_continent_colors = {k: v for k, v in continent_colors.items() if k in unique_continents}
+        selected_continent_colors = {
+            k: v for k, v in continent_colors.items() if k in unique_continents
+        }
 
         line = (
             alt.Chart(continent_avg)
@@ -549,9 +602,11 @@ def register_callbacks(app, df, geo_df):
                 alt.Y(selected_metric, title=f"Avg {metric_label}"),
                 alt.Color(
                     "continent:N",
-                    scale=alt.Scale(domain=list(selected_continent_colors.keys()), 
-                                    range=list(selected_continent_colors.values())),
-                    title="Continent"
+                    scale=alt.Scale(
+                        domain=list(selected_continent_colors.keys()),
+                        range=list(selected_continent_colors.values()),
+                    ),
+                    title="Continent",
                 ),
                 tooltip=["year", selected_metric, "continent"],
             )
@@ -565,9 +620,11 @@ def register_callbacks(app, df, geo_df):
                 alt.Y(selected_metric, title=f"Avg {metric_label}"),
                 alt.Color(
                     "continent:N",
-                    scale=alt.Scale(domain=list(selected_continent_colors.keys()), 
-                                    range=list(selected_continent_colors.values())),
-                    title="Continent"
+                    scale=alt.Scale(
+                        domain=list(selected_continent_colors.keys()),
+                        range=list(selected_continent_colors.values()),
+                    ),
+                    title="Continent",
                 ),
                 tooltip=["year", selected_metric, "continent"],
             )
@@ -584,20 +641,19 @@ def register_callbacks(app, df, geo_df):
 
         return alt_chart.to_dict(format="vega")
 
-
-    #Metric definitions to map for the dropdown menu. 
+    # Metric definitions to map for the dropdown menu.
     METRIC_DEFINITIONS = {
-    "gdp": "GDP per capita is the total value of goods and services a country produces (Gross Domestic Product) divided by its population. It measures the average economic output per person, giving an idea of a country's standard of living.",
-    "life_exp": "Life expectancy indicates the number of years a person would be expected to live based on current health, living and mortality conditions.",
-    "hdi_index": "A measure of a country's overall development, considering life expectancy, education (literacy and schooling), and income per capita. It ranges from 0 to 1, with higher values indicating better development.",
-    "co2_consump": "The total amount of carbon dioxide emissions produced by a country, region, or individual, usually from burning fossil fuels for energy, transportation, and industry. It is often measured in metric tons per capita.",
-    "services": "Percentage of the workforce engaged in service industries. This includes workers who are part of the economy that provides non-tangible goods, such as healthcare, education, finance, retail, entertainment, and tourism, rather than physical products.",
-}
+        "gdp": "GDP per capita is the total value of goods and services a country produces (Gross Domestic Product) divided by its population. It measures the average economic output per person, giving an idea of a country's standard of living.",
+        "life_exp": "Life expectancy indicates the number of years a person would be expected to live based on current health, living and mortality conditions.",
+        "hdi_index": "A measure of a country's overall development, considering life expectancy, education (literacy and schooling), and income per capita. It ranges from 0 to 1, with higher values indicating better development.",
+        "co2_consump": "The total amount of carbon dioxide emissions produced by a country, region, or individual, usually from burning fossil fuels for energy, transportation, and industry. It is often measured in metric tons per capita.",
+        "services": "Percentage of the workforce engaged in service industries. This includes workers who are part of the economy that provides non-tangible goods, such as healthcare, education, finance, retail, entertainment, and tourism, rather than physical products.",
+    }
 
     @app.callback(
         Output("metric-definition", "children"),
-        Input("metric-dropdown-bottom", "value")
+        Input("metric-dropdown-bottom", "value"),
     )
-    #Adds the mapped metric definitions for the drop down menu. 
+    # Adds the mapped metric definitions for the drop down menu.
     def update_metric_definition(selected_metric):
         return METRIC_DEFINITIONS.get(selected_metric, "Definition not available.")
