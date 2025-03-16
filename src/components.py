@@ -104,7 +104,7 @@ def create_cards():
 
     card_avg_life = dcc.Loading(dbc.Card(id="average_life", style=card_style),
                                 type = 'circle')
-    card_avg_gdp = dcc.Loading(dbc.Card(id="average_gdp", style=card_style),
+    card_avg_pop = dcc.Loading(dbc.Card(id="average_pop", style=card_style),
                                type = 'circle')
     card_dynamic_metric = dcc.Loading(
         dbc.Card(
@@ -122,7 +122,7 @@ def create_cards():
     return dbc.Row(
         [
             dbc.Col(card_avg_life, md=4, className="mb-3"),
-            dbc.Col(card_avg_gdp, md=4, className="mb-3"),
+            dbc.Col(card_avg_pop, md=4, className="mb-3"),
             dbc.Col(card_dynamic_metric, md=4, className="mb-3"),
         ],
         className="g-3 align-items-start",
