@@ -344,9 +344,7 @@ def register_callbacks(app, df, geo_df):
                         "country:N",
                         "gdp:Q",
                         alt.Tooltip("life_exp", title="Life Expectancy"),
-                        # "life_exp:Q",
                         alt.Tooltip("co2_consump", title="Co2 Consumption"),
-                        # "co2_consump:Q",
                         "continent:N",
                     ],
                     opacity=alt.condition(
@@ -414,9 +412,7 @@ def register_callbacks(app, df, geo_df):
                         "country:N",
                         "gdp:Q",
                         alt.Tooltip("life_exp", title="Life Expectancy"),
-                        # "life_exp:Q",
                         alt.Tooltip("co2_consump", title="Co2 Consumption"),
-                        # "co2_consump:Q",
                         "continent:N",
                     ],
                 )
@@ -455,7 +451,6 @@ def register_callbacks(app, df, geo_df):
         # If none of the selected countries are present, return empty plot
         countries_in_data = df["country"].unique()
         if not any(country in countries_in_data for country in selected_country):
-            print("AHHHHHHHHHHH")
             return (
                 alt.Chart(
                     pd.DataFrame(
