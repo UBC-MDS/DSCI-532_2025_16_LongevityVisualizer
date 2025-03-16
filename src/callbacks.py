@@ -58,7 +58,7 @@ def register_callbacks(app, df, geo_df):
     @app.callback(
         [
             Output("average_life", "children"),
-            Output("average_gdp", "children"),
+            Output("average_pop", "children"),
             Output("dynamic-metric-card", "children"),
         ],
         [
@@ -69,10 +69,10 @@ def register_callbacks(app, df, geo_df):
     )
     def update_average_values(selected_continent, selected_year, selected_metric):
         # Filter dataset based on selected continent(s)
-        filtered_df = df[df["year"] == selected_year]
+        filtered_df = geo_df[geo_df["year"] == selected_year]
 
         # Filter dataset for previous year
-        previous_years = df[df["year"] == selected_year - 1]
+        previous_years =geo_df[geo_df["year"] == selected_year - 1]
 
         if "(All)" not in selected_continent:
             filtered_df = filtered_df[filtered_df["continent"].isin(selected_continent)]
@@ -86,12 +86,12 @@ def register_callbacks(app, df, geo_df):
 
         # Compute Averages
         avg_life = filtered_df["life_exp"].mean()
-        avg_gdp = filtered_df["gdp"].mean()
+        avg_pop = filtered_df["population"].mean()
         avg_dynamic_metric = filtered_df[selected_metric].mean()
 
         # Compute preceding year averages
         prev_avg_life = previous_years["life_exp"].mean()
-        prev_avg_gdp = previous_years["gdp"].mean()
+        prev_avg_pop = previous_years["population"].mean()
         prev_avg_dynamic_metric = previous_years[selected_metric].mean()
 
         # Helper function to calculate percentage change
@@ -123,7 +123,7 @@ def register_callbacks(app, df, geo_df):
             avg_life, prev_avg_life, selected_year - 1
         )
         percentage_change_gdp, style_gdp = calculate_change(
-            avg_gdp, prev_avg_gdp, selected_year - 1
+            avg_pop, prev_avg_pop, selected_year - 1
         )
         percentage_change_dynamic_metric, style_dynamic_metric = calculate_change(
             avg_dynamic_metric, prev_avg_dynamic_metric, selected_year - 1
@@ -148,9 +148,9 @@ def register_callbacks(app, df, geo_df):
             ),
             dbc.CardFooter(percentage_change_life, style=style_life),
         ]
-        _avg_gdp = [
+        _avg_pop = [
             dbc.CardHeader(
-                "💰 Average GDP per Capita",
+                "🗿 Average Population",
                 style={
                     "backgroundColor": "#4077A6",
                     "color": "white",
@@ -161,7 +161,7 @@ def register_callbacks(app, df, geo_df):
                 },
             ),
             dbc.CardBody(
-                f"${int(avg_gdp):,}",
+                f"{int(avg_pop):,}",
                 style={"textAlign": "center", "fontSize": "35px"},
             ),
             dbc.CardFooter(percentage_change_gdp, style=style_gdp),
@@ -217,7 +217,7 @@ def register_callbacks(app, df, geo_df):
         ]
 
         # Format the output
-        return _avg_life, _avg_gdp, _avg_dynamic_metric
+        return _avg_life, _avg_pop, _avg_dynamic_metric
 
     # Callback to update the map chart
     @app.callback(
