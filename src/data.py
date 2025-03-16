@@ -1,6 +1,6 @@
 import pandas as pd
 import geopandas as gpd
-from src.cache_config import cache  
+from src.cache_config import cache
 
 import os
 import pandas as pd
@@ -10,7 +10,7 @@ import pandas as pd
 def load_data():
     """Load and preprocess the Gapminder dataset, saving it as a Parquet file."""
     parquet_path = "data/processed/gapminder_data.parquet"
-    
+
     # Load the parquet data
     if os.path.exists(parquet_path):
         return pd.read_parquet(parquet_path)
@@ -29,16 +29,18 @@ def load_data():
             "services",
         ]
     )
-    
+
     # Save to Parquet for future use
     os.makedirs("data/processed", exist_ok=True)  # Ensure the directory exists
     df.to_parquet(parquet_path, engine="pyarrow", index=False)
-    
+
     return df
+
 
 def get_unique_years(df, step=4):
     """Get unique years from dataset with a specified step."""
     return sorted(df["year"].unique())[::step]
+
 
 # Constants for metrics
 METRIC_OPTIONS = [
@@ -66,6 +68,7 @@ CONTINENT_COLORS = {
     "Oceania": "#9467bd",  # Purple
     "South America": "#8c564b",  # Brown
 }
+
 
 @cache.memoize()
 def load_geodata():
