@@ -239,20 +239,22 @@ def register_callbacks(app, df, geo_df):
 
         select = alt.selection_point(fields=["country"], name="select_region")
 
-
         map = (
             (
                 alt.Chart(
                     dff, width="container", title=f"Life expectancy in {selected_year}"
                 )
-                .mark_geoshape(stroke="black",cursor='pointer')
+                .mark_geoshape(stroke="black", cursor="pointer")
                 .encode(
                     color=alt.condition(
                         alt.datum.is_empty,
                         alt.Color("life_exp:Q", title="Life Expectancy"),
                         alt.value("lightgray"),
                     ),
-                    tooltip=["country", alt.Tooltip("life_exp", title = "Life Expectancy")],
+                    tooltip=[
+                        "country",
+                        alt.Tooltip("life_exp", title="Life Expectancy"),
+                    ],
                 )
             )
             # .properties(width=600, heigth=600)
@@ -341,8 +343,10 @@ def register_callbacks(app, df, geo_df):
                     tooltip=[
                         "country:N",
                         "gdp:Q",
-                        "life_exp:Q",
-                        "co2_consump:Q",
+                        alt.Tooltip("life_exp", title="Life Expectancy"),
+                        # "life_exp:Q",
+                        alt.Tooltip("co2_consump", title="Co2 Consumption"),
+                        # "co2_consump:Q",
                         "continent:N",
                     ],
                     opacity=alt.condition(
@@ -409,8 +413,10 @@ def register_callbacks(app, df, geo_df):
                     tooltip=[
                         "country:N",
                         "gdp:Q",
-                        "life_exp:Q",
-                        "co2_consump:Q",
+                        alt.Tooltip("life_exp", title="Life Expectancy"),
+                        # "life_exp:Q",
+                        alt.Tooltip("co2_consump", title="Co2 Consumption"),
+                        # "co2_consump:Q",
                         "continent:N",
                     ],
                 )
@@ -421,7 +427,6 @@ def register_callbacks(app, df, geo_df):
                 .interactive()
             )
         return chart.to_dict(format="vega")
-
 
     @app.callback(
         Output("country-metric-chart", "spec"),
