@@ -5,6 +5,7 @@ import os
 import sys
 
 # Get the project root directory (parent of src/)
+ASSETS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
@@ -17,7 +18,7 @@ from src.callbacks import register_callbacks
 alt.data_transformers.enable("vegafusion")
 
 # Initialize the app with Bootstrap styling
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], assets_folder=ASSETS_PATH)
 app.title = "Longevity Visualizer"
 server = app.server  # Define server at module level for Gunicorn to find
 cache.init_app(server) #Initialize the caching
