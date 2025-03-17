@@ -6,8 +6,8 @@
 
 This week, we focused on improving the map, cards, and several small details to enhance usability and interactivity.
 
-For the map, we addressed missing data by coloring countries with no available data in gray instead of leaving them blank. This makes it clear which regions lack information. We also updated the middle card, replacing average GDP per capita with average population to provide a broader view of the selected area. Additionally, we modified the third card to dynamically display the average value and growth percentage of the selected metric, making it more informative. To improve clarity, we added metric explanations when users select them from the dropdown.
-Beyond these main changes, we refined various design elements. We standardized continent colors across charts to improve consistency and readability. Borders were removed from all charts to match the style of the map and scatter plot. We also fixed minor layout issues, such as zooming inconsistencies and aligning card titles with the dashboard title.
+For the map, we addressed missing data by coloring countries with no available data in gray instead of leaving them blank. This makes it clear which regions lack information. We also updated the middle card, replacing average GDP per capita with average population to provide a broader view of the selected area. Additionally, we modified the third card to dynamically display the average value and growth percentage of the selected metric, making it more informative. To improve clarity, we added metric definitions when users select them from the dropdown.
+Beyond these main changes, we refined various design elements. We standardized continent colors across charts to improve consistency and readability. Our summary cards were updated to be more informative. Borders were removed from all charts to match the style of the map and scatter plot. We also fixed minor layout issues, such as zooming inconsistencies and aligning card titles with the dashboard title, and addressed performance improvements to make the dashboard load faster and minor changes to make the user experience better. 
 
 ### From Joel's Feedback
 
@@ -30,7 +30,8 @@ All suggested changes were implemented, making the dashboard more intuitive and 
 ## Deviations from Best Practices
 
 1. The country-level line charts use a similar color scheme with the continent's color in scatter and continent-level line charts, which may cause confusion.
-2. Previously listed deviations can be found in the [Milestone 2 Reflection](https://github.com/UBC-MDS/DSCI-532_2025_16_LongevityVisualizer/blob/main/reports/m2_reflection.md).
+2. Our processed file in gapminder.json has to be directly loaded as a .json file. It was not possible to load the data in a binary format because the geometry would be lost, which is important for the map. 
+3. Previously listed deviations can be found in the [Milestone 2 Reflection](https://github.com/UBC-MDS/DSCI-532_2025_16_LongevityVisualizer/blob/main/reports/m2_reflection.md).
 
 ## Deviations from the Proposal
 
