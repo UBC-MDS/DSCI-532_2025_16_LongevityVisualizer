@@ -14,7 +14,7 @@ In today’s rapidly changing world, access to comprehensive and interactive dat
   Discover life expectancy across countries using an intuitive choropleth map. Higher color intensity represents higher life expectancy, and clicking on a country reveals detailed statistics.
 
 - **Bubble Chart Analysis:**  
-  Explore the relationship between life expectancy and GDP per capita. The bubble sizes indicate CO2 consumption, helping you gauge environmental impact alongside economic metrics.
+  Explore the relationship between life expectancy and a selected metric. The bubble sizes indicate CO2 consumption, helping you gauge environmental impact alongside economic metrics.
 
 - **Comparative Trend Analysis:**  
   Use our bottom section to select metrics such as HDI, CO2, Life Expectancy, or Services (%) and compare these values across multiple countries via line charts.
@@ -39,7 +39,7 @@ To select a continent, use the corresponding drop-down menu. The corresponding c
 
 To select a year to view data for, use the slider. 
 
-To select a metric and country, use the dropdown slider. The corresponding line charts will change depending on this selection. 
+To select a metric and country, use the dropdown slider. The corresponding line charts and bubble chart will change depending on this selection. 
 
 ---
 
@@ -68,6 +68,11 @@ First, check out our [Contributing Guidelines](https://github.com/UBC-MDS/DSCI-5
 4. **Run the application:** 
     ```bash
     python -m src.app
+
+Next, you should see the following. 
+![Usage Instructions](img/instructions.png)
+
+Copy paste the highlighted part into your browser to launch the dashboard locally. 
 
 ## License
 
