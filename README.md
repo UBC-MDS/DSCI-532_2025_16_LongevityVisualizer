@@ -69,6 +69,11 @@ First, check out our [Contributing Guidelines](https://github.com/UBC-MDS/DSCI-5
     ```bash
     python -m src.app
 
+Next, you should see the following. 
+![Usage Instructions](img/instructions.png)
+
+Copy paste the highlighted part into your browser to launch the dashboard locally. 
+
 ## License
 
 `longevity_visualizer` was created by Long Nguyen, Zhiwei Zhang, Abdul Safdar, and Chukwunonso Ebele-Muolokwu. It is licensed under the terms of the MIT license.
