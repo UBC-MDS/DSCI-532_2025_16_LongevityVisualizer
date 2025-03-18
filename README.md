@@ -39,7 +39,7 @@ To select a continent, use the corresponding drop-down menu. The corresponding c
 
 To select a year to view data for, use the slider. 
 
-To select a metric and country, use the dropdown slider. The corresponding line charts and bubble chart will change depending on this selection. 
+To select a metric and country, use the dropdown slider. The corresponding line charts and bubble chart will change depending on this selection. You may also click on the map to view updated line charts depending on the country you selected. 
 
 ---
 
